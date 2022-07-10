@@ -98,12 +98,12 @@ reg   initiate_read1,initiate_read2;
 initial
    begin
             // write timings -- 10ns address access time
-         twc = 10 ;
+         twc = 9 ;
          tcw = 7 ;
          taw = 7 ;
    tas = 0 ;
    twp1 = 7 ;
-   twp2 = 10 ;
+   twp2 = 9 ;
    twr = 0 ;
    tah = 0 ;
    tdw = 5 ;
@@ -112,9 +112,9 @@ initial
    tow = 3 ;
    tbw = 7 ;
         // Read timings -- 10ns address access time
-   trc = 10 ;
-   taa = 10 ;
-   tace = 10 ;
+   trc = 9 ;
+   taa = 9 ;
+   tace = 9 ;
    toe = 4 ;
    toh = 3 ;
    tclz = 3 ;
@@ -125,7 +125,7 @@ initial
    tblz = 0 ;
    tbhz = 5 ;
    tpu = 0 ;
-   tpd = 10;
+   tpd = 9;
         // Internal Time signals  
     
     initiate_write1 = 1'b0;

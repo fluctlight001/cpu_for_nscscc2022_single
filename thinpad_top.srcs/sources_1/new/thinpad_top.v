@@ -50,12 +50,12 @@ module thinpad_top(
     output wire video_hsync,       //行同步（水平同步）信号
     output wire video_vsync,       //场同步（垂直同步）信号
     output wire video_clk,         //像素时钟输出
-    output wire video_de,           //行数据有效信号，用于区分消隐区
+    output wire video_de           //行数据有效信号，用于区分消隐区
     
-    output wire [31:0] debug_wb_pc,
-    output wire [3:0] debug_wb_rf_wen,
-    output wire [4:0] debug_wb_rf_wnum,
-    output wire [31:0] debug_wb_rf_wdata
+    // output wire [31:0] debug_wb_pc,
+    // output wire [3:0] debug_wb_rf_wen,
+    // output wire [4:0] debug_wb_rf_wnum,
+    // output wire [31:0] debug_wb_rf_wdata
 );
 
 /* =========== Demo code begin =========== */
@@ -77,7 +77,7 @@ pll_example clock_gen
 
 reg reset_of_clk10M;
 // 异步复位，同步释放，将locked信号转为后级电路的复位reset_of_clk10M
-always@(posedge soc_clk or negedge locked) begin
+always@(posedge clk_50M or negedge locked) begin
     if(~locked) reset_of_clk10M <= 1'b1;
     else        reset_of_clk10M <= 1'b0;
 end
@@ -168,11 +168,11 @@ mycpu_top u_mycpu_top(
     .data_sram_wen     (cpu_data_wen      ),
     .data_sram_addr    (cpu_data_addr     ),
     .data_sram_wdata   (cpu_data_wdata    ),
-    .data_sram_rdata   (cpu_data_rdata    ),
-    .debug_wb_pc       (debug_wb_pc       ),
-    .debug_wb_rf_wen   (debug_wb_rf_wen   ),
-    .debug_wb_rf_wnum  (debug_wb_rf_wnum  ),
-    .debug_wb_rf_wdata (debug_wb_rf_wdata )
+    .data_sram_rdata   (cpu_data_rdata    )
+    // .debug_wb_pc       (debug_wb_pc       ),
+    // .debug_wb_rf_wen   (debug_wb_rf_wen   ),
+    // .debug_wb_rf_wnum  (debug_wb_rf_wnum  ),
+    // .debug_wb_rf_wdata (debug_wb_rf_wdata )
 );
 
 bridge_1x3 u_bridge_1x3(

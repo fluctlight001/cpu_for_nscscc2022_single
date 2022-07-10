@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1062897602fs"></ZoomStartTime>
-      <ZoomEndTime time="1063212173fs"></ZoomEndTime>
-      <Cursor1Time time="1062992000fs"></Cursor1Time>
+      <ZoomStartTime time="4193716085fs"></ZoomStartTime>
+      <ZoomEndTime time="4193828783fs"></ZoomEndTime>
+      <Cursor1Time time="4193810000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="112"></NameColumnWidth>
+      <NameColumnWidth column_width="104"></NameColumnWidth>
       <ValueColumnWidth column_width="58"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="40" />
+   <WVObjectSize size="51" />
    <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/pc_reg" type="array">
       <obj_property name="ElementShortName">pc_reg[31:0]</obj_property>
       <obj_property name="ObjectShortName">pc_reg[31:0]</obj_property>
@@ -179,5 +179,49 @@
    <wvobject fp_name="/tb/dut/rxd" type="logic">
       <obj_property name="ElementShortName">rxd</obj_property>
       <obj_property name="ObjectShortName">rxd</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/conf_en" type="logic">
+      <obj_property name="ElementShortName">conf_en</obj_property>
+      <obj_property name="ObjectShortName">conf_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/conf_wen" type="array">
+      <obj_property name="ElementShortName">conf_wen[3:0]</obj_property>
+      <obj_property name="ObjectShortName">conf_wen[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/conf_addr" type="array">
+      <obj_property name="ElementShortName">conf_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">conf_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/conf_wdata" type="array">
+      <obj_property name="ElementShortName">conf_wdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">conf_wdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/conf_rdata" type="array">
+      <obj_property name="ElementShortName">conf_rdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">conf_rdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/u_confreg/txd" type="logic">
+      <obj_property name="ElementShortName">txd</obj_property>
+      <obj_property name="ObjectShortName">txd</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/u_confreg/rxd" type="logic">
+      <obj_property name="ElementShortName">rxd</obj_property>
+      <obj_property name="ObjectShortName">rxd</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/u_confreg/ext_uart_rx" type="array">
+      <obj_property name="ElementShortName">ext_uart_rx[7:0]</obj_property>
+      <obj_property name="ObjectShortName">ext_uart_rx[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/u_confreg/ext_uart_avai" type="logic">
+      <obj_property name="ElementShortName">ext_uart_avai</obj_property>
+      <obj_property name="ObjectShortName">ext_uart_avai</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/u_confreg/ext_uart_clear" type="logic">
+      <obj_property name="ElementShortName">ext_uart_clear</obj_property>
+      <obj_property name="ObjectShortName">ext_uart_clear</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/u_confreg/ext_uart_ready" type="logic">
+      <obj_property name="ElementShortName">ext_uart_ready</obj_property>
+      <obj_property name="ObjectShortName">ext_uart_ready</obj_property>
    </wvobject>
 </wave_config>
