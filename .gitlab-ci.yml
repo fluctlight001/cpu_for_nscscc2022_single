@@ -6,7 +6,7 @@ stages:
 
 bitstream:
   stage: build
-  image: vivado2019:2019.2-mips-gcc
+  image: nscscc:2019.2
   before_script:
     - source /opt/Xilinx/Vivado/2019.2/settings64.sh
     - export PATH=/opt/mips-mti-elf/2016.05-06/bin:${PATH}
@@ -15,6 +15,7 @@ bitstream:
     - python3 ./.ci-scripts/run-linter.py thinpad_top.xpr 2>linter.log
     - str="thinpad_top.srcs"
     - diff=""
+    - echo ${CI_COMMIT_BEFORE_SHA}
     - >
       if [ "${CI_COMMIT_BEFORE_SHA}" == "0000000000000000000000000000000000000000" ]
         then vivado -mode tcl -source .ci-scripts/bits.tcl thinpad_top.xpr
