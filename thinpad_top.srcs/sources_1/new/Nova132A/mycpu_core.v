@@ -3,6 +3,7 @@ module mycpu_core(
     input wire clk,
     input wire rst,
     input wire [5:0] int,
+    input wire stallreq_for_out,
 
     output wire inst_sram_en,
     output wire [3:0] inst_sram_wen,
@@ -139,6 +140,7 @@ module mycpu_core(
         .stallreq_for_ex   (stallreq_for_ex   ),
         .stallreq_for_bru  (stallreq_for_bru  ),
         .stallreq_for_load (stallreq_for_load ),
+        .stallreq_for_out  (stallreq_for_out  ),
         .stall             (stall             )
     );
     

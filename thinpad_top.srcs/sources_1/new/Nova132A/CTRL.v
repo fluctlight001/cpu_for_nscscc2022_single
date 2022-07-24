@@ -4,6 +4,7 @@ module CTRL(
     input wire stallreq_for_ex,
     input wire stallreq_for_bru,
     input wire stallreq_for_load,
+    input wire stallreq_for_out,
 
     // output reg flush,
     // output reg [31:0] new_pc,
@@ -12,6 +13,9 @@ module CTRL(
     always @ (*) begin
         if (rst) begin
             stall = `StallBus'b0;
+        end
+        else if (stallreq_for_out) begin
+            stall = `StallBus'b011111111;
         end
         else if (stallreq_for_ex) begin
             stall = `StallBus'b000011111;
