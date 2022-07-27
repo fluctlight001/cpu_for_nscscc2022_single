@@ -1,3 +1,4 @@
+`define STAGE_WD 12
 module sram_ctrl(
     input wire clk,
     input wire resetn,
@@ -19,22 +20,23 @@ module sram_ctrl(
     output wire ext_ram_we_n,       //ExtRAM写使能，低有效
 
     //icache 
-    output wire ird_req,
-    output wire [31:0] ird_addr,
-    output wire iwr_req,
-    output wire [31:0] iwr_addr,
-    output wire [255:0] icacheline_old,
-    input wire ireload,
-    input wire [255:0] icacheline_new,
+    input wire ird_req,
+    input wire [31:0] ird_addr,
+    input wire iwr_req,
+    input wire [31:0] iwr_addr,
+    input wire [255:0] icacheline_old,
+    output reg ireload,
+    output reg [255:0] icacheline_new,
 
     //dcache
-    output wire drd_req,
-    output wire [31:0] drd_addr,
-    output wire dwr_req,
-    output wire [31:0] dwr_addr,
-    output wire [255:0] dcacheline_old,
-    input wire dreload,
-    input wire [255:0] dcacheline_new
+    input wire drd_req,
+    input wire [31:0] drd_addr,
+    input wire dwr_req,
+    input wire [3:0] dwr_wstrb,
+    input wire [31:0] dwr_addr,
+    input wire [31:0] dwr_data,
+    output reg dreload,
+    output reg [31:0] drd_data
 );
     //reg for base ram
     reg [31:0] base_ram_data_r;
@@ -50,6 +52,17 @@ module sram_ctrl(
     reg ext_ram_ce_n_r;
     reg ext_ram_oe_n_r;
     reg ext_ram_we_n_r;
+
+    reg [`STAGE_WD-1:0] stage_i;
+    reg [`STAGE_WD-1:0] stage_d;
+
+    reg [3:0] icache_offset;
+    reg [3:0] icache_offset_w;
+    reg [3:0] dcache_offset;
+    reg [3:0] dcache_offset_w;
+
+    reg ird_req_r, drd_req_r;
+    reg iwr_req_r, dwr_req_r;
 
     assign base_ram_data = ~base_ram_we_n_r ? base_ram_data_r : 32'bz;
     assign ext_ram_data  = ~ext_ram_we_n_r  ? ext_ram_data_r  : 32'bz;
@@ -81,28 +94,176 @@ module sram_ctrl(
             base_ram_we_n_r <= 1'b1;
             base_ram_data_r <= 32'b0;
 
+            stage_i <= `STAGE_WD'b1;
+            ird_req_r <= 1'b0;
+            iwr_req_r <= 1'b0;
+            icache_offset <= 4'b0;
+            icache_offset_w <= 4'b0;
+            ireload <= 1'b0;
+            icacheline_new <= 256'b0;
+        end
+        else begin
+            case(1'b1)
+                stage_i[0]:begin
+                    ireload <= 1'b0;
+                    icacheline_new <= 256'b0;
+                    ird_req_r <= ird_req;
+                    iwr_req_r <= iwr_req;
+                    if (ird_req) begin
+                        stage_i <= stage_i << 1;
+                        icache_offset <= 4'b0;
+                    end
+                    else if (iwr_req) begin
+                        stage_i <= stage_i << 5;
+                        icache_offset_w <= 4'b0;
+                    end
+                end
+                stage_i[1]:begin
+                    base_ram_addr_r <= ird_addr[21:2] + icache_offset;
+                    base_ram_be_n_r <= 4'b0;
+                    base_ram_ce_n_r <= 1'b0;
+                    base_ram_oe_n_r <= 1'b0;
+                    base_ram_we_n_r <= 1'b1;
+                    base_ram_data_r <= 32'b0;
+                    stage_i <= stage_i << 1;
+                end
+                stage_i[2]:begin
+                    // icache_offset <= icache_offset + 1'b1;
+                    stage_i <= stage_i << 1;
+                end
+                stage_i[3]:begin
+                    icacheline_new[icache_offset*32+:32] <= base_ram_data;
+                    if (icache_offset == 4'b0111) begin
+                        base_ram_addr_r <= 19'b0;
+                        base_ram_be_n_r <= 4'b0;
+                        base_ram_ce_n_r <= 1'b1;
+                        base_ram_oe_n_r <= 1'b1;
+                        base_ram_we_n_r <= 1'b1;
+                        base_ram_data_r <= 32'b0;
+                        stage_i <= stage_i << 1;
+                    end
+                    else begin
+                        base_ram_addr_r <= ird_addr[21:2] + icache_offset + 1'b1;
+                        icache_offset <= icache_offset + 1'b1;
+                        stage_i <= stage_i >> 1;
+                    end
+                end
+                stage_i[4]:begin
+                    if (iwr_req_r) begin
+                        stage_i <= stage_i << 1;
+                    end
+                    else begin
+                        stage_i <= stage_i << 3;
+                    end
+                end
+                stage_i[5]:begin
+                    base_ram_addr_r <= iwr_addr[21:2] + icache_offset_w;
+                    base_ram_be_n_r <= 4'b0;
+                    base_ram_ce_n_r <= 1'b0;
+                    base_ram_oe_n_r <= 1'b1;
+                    base_ram_we_n_r <= 1'b0;
+                    base_ram_data_r <= icacheline_old[icache_offset_w*32+:32];
+                    stage_i <= stage_i << 1;
+                end
+                stage_i[6]:begin
+                    if (icache_offset_w == 4'b0111) begin
+                        base_ram_addr_r <= 19'b0;
+                        base_ram_be_n_r <= 4'b0;
+                        base_ram_ce_n_r <= 1'b1;
+                        base_ram_oe_n_r <= 1'b1;
+                        base_ram_we_n_r <= 1'b1;
+                        base_ram_data_r <= 32'b0;
+                        stage_i <= stage_i << 1;
+                    end
+                    else begin
+                        icache_offset_w <= icache_offset_w + 1'b1;
+                        stage_i <= stage_i >> 1;
+                    end
+                end
+                stage_i[7]:begin
+                    if (ird_req_r) begin
+                        ireload <= 1'b1;
+                    end
+                    stage_i <= 1'b0;
+                end
+                default:begin
+                    stage_i <= 1'b1;
+                    ireload <= 1'b0;
+                end
+
+            endcase 
+        end
+        // todo
+        // else begin
+        //     base_ram_addr_r <= inst_sram_en ? inst_sram_addr[21:2] : cpu_inst_addr[21:2];
+        //     base_ram_be_n_r <= (|inst_sram_wen) ? ~inst_sram_wen : 4'b0;
+        //     base_ram_ce_n_r <= ~cpu_inst_en & ~inst_sram_en;
+        //     base_ram_oe_n_r <= ~(cpu_inst_en & ~(|cpu_inst_wen)) & ~(inst_sram_en & ~(|inst_sram_wen));
+        //     base_ram_we_n_r <= ~(cpu_inst_en & (|cpu_inst_wen)) & ~(inst_sram_en & (|inst_sram_wen));
+        //     base_ram_data_r <= inst_sram_wdata;
+
+        //     ext_ram_addr_r <= data_sram_addr[21:2];
+        //     ext_ram_be_n_r <= (|data_sram_wen) ? ~data_sram_wen : 4'b0;
+        //     ext_ram_ce_n_r <= ~data_sram_en;
+        //     ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
+        //     ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));
+        //     ext_ram_data_r <= data_sram_wdata;
+        // end
+    end
+
+    always @(posedge clk) begin
+        if (!resetn) begin
             ext_ram_addr_r <= 19'b0;
             ext_ram_be_n_r <= 4'b0;
             ext_ram_ce_n_r <= 1'b1;
             ext_ram_oe_n_r <= 1'b1;
             ext_ram_we_n_r <= 1'b1;
             ext_ram_data_r <= 32'b0;
-        end
-        // todo
-        else begin
-            base_ram_addr_r <= inst_sram_en ? inst_sram_addr[21:2] : cpu_inst_addr[21:2];
-            base_ram_be_n_r <= (|inst_sram_wen) ? ~inst_sram_wen : 4'b0;
-            base_ram_ce_n_r <= ~cpu_inst_en & ~inst_sram_en;
-            base_ram_oe_n_r <= ~(cpu_inst_en & ~(|cpu_inst_wen)) & ~(inst_sram_en & ~(|inst_sram_wen));
-            base_ram_we_n_r <= ~(cpu_inst_en & (|cpu_inst_wen)) & ~(inst_sram_en & (|inst_sram_wen));
-            base_ram_data_r <= inst_sram_wdata;
 
-            ext_ram_addr_r <= data_sram_addr[21:2];
-            ext_ram_be_n_r <= (|data_sram_wen) ? ~data_sram_wen : 4'b0;
-            ext_ram_ce_n_r <= ~data_sram_en;
-            ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
-            ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));
-            ext_ram_data_r <= data_sram_wdata;
+            stage_d <= `STAGE_WD'b1;
+            drd_req_r <= 1'b0;
+            dwr_req_r <= 1'b0;
+            dcache_offset <= 4'b0;
+            dcache_offset_w <= 4'b0;
+            dreload <= 1'b0;
+            drd_data <= 32'b0;
+
+        end
+        else begin
+            case(1'b1)
+                stage_d[0]:begin
+                    dreload <= 1'b0;
+                    drd_data <= 32'b0;
+                    drd_req_r <= drd_req;
+                    dwr_req_r <= dwr_req;
+                    if (drd_req | dwr_req) begin
+                        stage_d <= stage_d << 1;
+                    end
+                end
+                stage_d[1]:begin
+                    ext_ram_addr_r <= drd_req_r ? drd_addr[21:2] : dwr_addr[21:2];
+                    ext_ram_be_n_r <= (|dwr_wstrb) ? ~dwr_wstrb : 4'b0;
+                    ext_ram_ce_n_r <= 1'b0;
+                    ext_ram_oe_n_r <= ~drd_req_r;
+                    ext_ram_we_n_r <= ~dwr_req_r;
+                    ext_ram_data_r <= dwr_data;
+                    stage_d <= stage_d << 1;
+                end
+                stage_d[2]:begin
+                    stage_d <= stage_d << 1;
+                end
+                stage_d[3]:begin
+                    drd_data <= ext_ram_data;
+                    if (drd_req_r | dwr_req_r) begin
+                        dreload <= 1'b1;
+                    end
+                    stage_d <= 1'b0;
+                end
+                default:begin
+                    stage_d <= 1'b1;
+                    dreload <= 1'b0;
+                end
+            endcase
         end
     end
 endmodule

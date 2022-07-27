@@ -50,12 +50,12 @@ module thinpad_top(
     output wire video_hsync,       //行同步（水平同步）信号
     output wire video_vsync,       //场同步（垂直同步）信号
     output wire video_clk,         //像素时钟输出
-    output wire video_de           ,//行数据有效信号，用于区分消隐区
+    output wire video_de           //行数据有效信号，用于区分消隐区
     
-    output wire [31:0] debug_wb_pc,
-    output wire [3:0] debug_wb_rf_wen,
-    output wire [4:0] debug_wb_rf_wnum,
-    output wire [31:0] debug_wb_rf_wdata
+    // output wire [31:0] debug_wb_pc,
+    // output wire [3:0] debug_wb_rf_wen,
+    // output wire [4:0] debug_wb_rf_wnum,
+    // output wire [31:0] debug_wb_rf_wdata
 );
 
 /* =========== Demo code begin =========== */
@@ -76,10 +76,16 @@ pll_example clock_gen
  );
 
 reg reset_of_clk10M;
+reg soc_resetn;
 // 异步复位，同步释放，将locked信号转为后级电路的复位reset_of_clk10M
 always@(posedge cpu_clk or negedge locked) begin
     if(~locked) reset_of_clk10M <= 1'b1;
     else        reset_of_clk10M <= 1'b0;
+end
+
+always @ (posedge soc_clk or negedge locked) begin
+    if (~locked) soc_resetn <= 1'b0;
+    else         soc_resetn <= 1'b1;
 end
 
 wire clk, resetn;
@@ -97,17 +103,22 @@ wire [255:0] icacheline_new;
 wire drd_req;
 wire [31:0] drd_addr;
 wire dwr_req;
+wire [3:0] dwr_wstrb;
 wire [31:0] dwr_addr;
-wire [255:0] dcacheline_old;
+wire [31:0] dwr_data;
 wire dreload;
-wire [255:0] dcacheline_new;
+wire [31:0] drd_data;
 
 mycpu_top u_mycpu_top(
     .clk               (clk               ),
+    .soc_clk           (soc_clk           ),
     .resetn            (resetn            ),
+    .soc_resetn        (soc_resetn        ),
     .ext_int           (6'b0              ),
     .txd               (txd               ),
     .rxd               (rxd               ),
+    .leds              (leds              ),
+    
     .ird_req           (ird_req           ),
     .ird_addr          (ird_addr          ),
     .iwr_req           (iwr_req           ),
@@ -118,14 +129,15 @@ mycpu_top u_mycpu_top(
     .drd_req           (drd_req           ),
     .drd_addr          (drd_addr          ),
     .dwr_req           (dwr_req           ),
+    .dwr_wstrb         (dwr_wstrb         ),
     .dwr_addr          (dwr_addr          ),
-    .dcacheline_old    (dcacheline_old    ),
+    .dwr_data          (dwr_data          ),
     .dreload           (dreload           ),
-    .dcacheline_new    (dcacheline_new    ),
-    .debug_wb_pc       (debug_wb_pc       ),
-    .debug_wb_rf_wen   (debug_wb_rf_wen   ),
-    .debug_wb_rf_wnum  (debug_wb_rf_wnum  ),
-    .debug_wb_rf_wdata (debug_wb_rf_wdata )
+    .drd_data          (drd_data          )
+    // .debug_wb_pc       (debug_wb_pc       ),
+    // .debug_wb_rf_wen   (debug_wb_rf_wen   ),
+    // .debug_wb_rf_wnum  (debug_wb_rf_wnum  ),
+    // .debug_wb_rf_wdata (debug_wb_rf_wdata )
 );
 
 sram_ctrl u_sram_ctrl(
@@ -153,10 +165,11 @@ sram_ctrl u_sram_ctrl(
     .drd_req        (drd_req        ),
     .drd_addr       (drd_addr       ),
     .dwr_req        (dwr_req        ),
+    .dwr_wstrb      (dwr_wstrb      ),
     .dwr_addr       (dwr_addr       ),
-    .dcacheline_old (dcacheline_old ),
+    .dwr_data       (dwr_data       ),
     .dreload        (dreload        ),
-    .dcacheline_new (dcacheline_new )
+    .drd_data       (drd_data       )
 );
 
 

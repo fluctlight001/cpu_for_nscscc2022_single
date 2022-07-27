@@ -1,12 +1,16 @@
 `include "lib/defines.vh"
 module mycpu_top(
     input wire clk,
+    input wire soc_clk,
     input wire resetn,
+    input wire soc_resetn,
     input wire [5:0] ext_int,
 
     //直连串口信号
     output wire txd,  //直连串口发送端
     input  wire rxd,  //直连串口接收端
+
+    output wire[15:0] leds,       //16位LED，输出时1点亮
 
     //icache 
     output wire ird_req,
@@ -21,10 +25,11 @@ module mycpu_top(
     output wire drd_req,
     output wire [31:0] drd_addr,
     output wire dwr_req,
+    output wire [3:0] dwr_wstrb,
     output wire [31:0] dwr_addr,
-    output wire [255:0] dcacheline_old,
+    output wire [31:0] dwr_data,
     input wire dreload,
-    input wire [255:0] dcacheline_new,
+    input wire [31:0] drd_data,
 
     //debug_*
     output wire [31:0] debug_wb_pc,
@@ -64,6 +69,9 @@ module mycpu_top(
     wire [31:0] conf_rdata;
 
     wire [31:0] cpu_inst_addr_v, cpu_data_addr_v;
+
+    wire stallreq_for_icache, stallreq_for_dcache, stallreq_for_out;
+    assign stallreq_for_out = stallreq_for_icache | stallreq_for_dcache;
 
     mycpu_core u_mycpu_core(
     	.clk               (clk               ),
@@ -125,11 +133,11 @@ module mycpu_top(
     cache u_icache(
     	.clk             (clk             ),
         .resetn          (resetn          ),
-        .stallreq        (stallreq        ),
+        .stallreq        (stallreq_for_icache        ),
         .data_sram_en    (cpu_inst_en | inst_sram_en    ),
-        .data_sram_wen   (cpu_inst_wen | inst_sram_wen   ),
-        .data_sram_addr  (cpu_inst_addr | inst_sram_addr  ),
-        .data_sram_wdata (cpu_inst_wdata | inst_sram_wdata ),
+        .data_sram_wen   (inst_sram_en ? inst_sram_wen : cpu_inst_wen    ),
+        .data_sram_addr  (inst_sram_en ? inst_sram_addr : cpu_inst_addr  ),
+        .data_sram_wdata (inst_sram_en ? inst_sram_wdata : cpu_inst_wdata),
         .data_sram_rdata (cpu_inst_rdata ),
         .rd_req          (ird_req          ),
         .rd_addr         (ird_addr         ),
@@ -140,27 +148,49 @@ module mycpu_top(
         .cacheline_new   (icacheline_new   )
     );
     
-    cache u_dcache(
-    	.clk             (clk             ),
-        .resetn          (resetn          ),
-        .stallreq        (stallreq        ),
-        .data_sram_en    (data_sram_en    ),
-        .data_sram_wen   (data_sram_wen   ),
-        .data_sram_addr  (data_sram_addr  ),
-        .data_sram_wdata (data_sram_wdata ),
-        .data_sram_rdata (data_sram_rdata ),
-        .rd_req          (drd_req          ),
-        .rd_addr         (drd_addr         ),
-        .wr_req          (dwr_req          ),
-        .wr_addr         (dwr_addr         ),
-        .cacheline_old   (dcacheline_old   ),
-        .reload          (dreload          ),
-        .cacheline_new   (dcacheline_new   )
+    // cache u_dcache(
+    // 	.clk             (clk             ),
+    //     .resetn          (resetn          ),
+    //     .stallreq        (stallreq_for_dcache        ),
+    //     .data_sram_en    (data_sram_en    ),
+    //     .data_sram_wen   (data_sram_wen   ),
+    //     .data_sram_addr  (data_sram_addr  ),
+    //     .data_sram_wdata (data_sram_wdata ),
+    //     .data_sram_rdata (data_sram_rdata ),
+    //     .rd_req          (drd_req          ),
+    //     .rd_addr         (drd_addr         ),
+    //     .wr_req          (dwr_req          ),
+    //     .wr_addr         (dwr_addr         ),
+    //     .cacheline_old   (dcacheline_old   ),
+    //     .reload          (dreload          ),
+    //     .cacheline_new   (dcacheline_new   )
+    // );
+
+    uncache u_dcache(
+    	.clk        (clk        ),
+        .resetn     (resetn     ),
+        .stallreq   (stallreq_for_dcache   ),
+        .conf_en    (data_sram_en    ),
+        .conf_wen   (data_sram_wen   ),
+        .conf_addr  (data_sram_addr  ),
+        .conf_wdata (data_sram_wdata ),
+        .conf_rdata (data_sram_rdata ),
+        .rd_req     (drd_req     ),
+        .rd_addr    (drd_addr    ),
+        .wr_req     (dwr_req     ),
+        .wr_wstrb   (dwr_wstrb   ),
+        .wr_addr    (dwr_addr    ),
+        .wr_data    (dwr_data    ),
+        .reload     (dreload     ),
+        .rd_data    (drd_data    )
     );
+    
     
     confreg u_confreg(
         .clk        (clk        ),
+        .soc_clk    (soc_clk    ),
         .resetn     (resetn     ),
+        .soc_resetn (soc_resetn ),
         .conf_en    (conf_en    ),
         .conf_wen   (conf_wen   ),
         .conf_addr  (conf_addr  ),
@@ -168,8 +198,8 @@ module mycpu_top(
         .conf_rdata (conf_rdata ),
         .txd        (txd        ),
         .rxd        (rxd        ),
-        // .led        (leds        ),
-        .switch     (8'b0     )
+        .led        (leds       )
+        // .switch     (8'b0     )
     );
     
     
