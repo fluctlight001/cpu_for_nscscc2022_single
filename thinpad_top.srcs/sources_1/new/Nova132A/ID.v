@@ -13,7 +13,6 @@ module ID(
     input wire [31:0] inst_sram_rdata,
 
     input wire [`EX_TO_RF_WD-1:0] ex_to_rf_bus,
-    input wire [`DF_TO_RF_WD-1:0] df_to_rf_bus,
     input wire [`DC_TO_RF_WD-1:0] dc_to_rf_bus,
     input wire [`MEM_TO_RF_WD-1:0] mem_to_rf_bus,
     input wire [`WB_TO_RF_WD-1:0] wb_to_rf_bus,
@@ -28,19 +27,21 @@ module ID(
     wire [31:0] id_pc;
     wire ce;
 
-    wire ex_rf_we, df_rf_we, dc_rf_we, mem_rf_we, wb_rf_we;
-    wire [4:0] ex_rf_waddr, df_rf_waddr, dc_rf_waddr, mem_rf_waddr, wb_rf_waddr;
-    wire [31:0] ex_rf_wdata, df_rf_wdata, dc_rf_wdata, mem_rf_wdata, wb_rf_wdata;
+    wire ex_rf_we, dc_rf_we, mem_rf_we, wb_rf_we;
+    wire [4:0] ex_rf_waddr, dc_rf_waddr, mem_rf_waddr, wb_rf_waddr;
+    wire [31:0] ex_rf_wdata, dc_rf_wdata, mem_rf_wdata, wb_rf_wdata;
 
-    wire ex_hi_we, df_hi_we, dc_hi_we, mem_hi_we, wb_hi_we;
-    wire ex_lo_we, df_lo_we, dc_lo_we, mem_lo_we, wb_lo_we;
-    wire [31:0] ex_hi_i, df_hi_i, dc_hi_i, mem_hi_i, wb_hi_i;
-    wire [31:0] ex_lo_i, df_lo_i, dc_lo_i, mem_lo_i, wb_lo_i;
+    wire ex_hi_we, dc_hi_we, mem_hi_we, wb_hi_we;
+    wire ex_lo_we, dc_lo_we, mem_lo_we, wb_lo_we;
+    wire [31:0] ex_hi_i, dc_hi_i, mem_hi_i, wb_hi_i;
+    wire [31:0] ex_lo_i, dc_lo_i, mem_lo_i, wb_lo_i;
 
     wire [31:0] hi_o, lo_o;
     wire [31:0] hi, lo;
 
-    wire ex_is_load, df_is_load, dc_is_load;
+    wire ex_is_load, dc_is_load;
+    wire ex_is_store, dc_is_store;
+    wire ex_addr_in_base, dc_addr_in_base;
 
     reg flag;
     reg [31:0] buf_inst;
@@ -84,16 +85,15 @@ module ID(
     } = ic_to_id_bus_r;
 
     assign {
+        ex_addr_in_base,
+        ex_is_store,
         ex_is_load,
         ex_hi_we, ex_hi_i, ex_lo_we, ex_lo_i, ex_rf_we, ex_rf_waddr, ex_rf_wdata
     } = ex_to_rf_bus;
 
     assign {
-        df_is_load,
-        df_hi_we, df_hi_i, df_lo_we, df_lo_i, df_rf_we, df_rf_waddr, df_rf_wdata
-    } = df_to_rf_bus;
-
-    assign {
+        dc_addr_in_base,
+        dc_is_store,
         dc_is_load,
         dc_hi_we, dc_hi_i, dc_lo_we, dc_lo_i, dc_rf_we, dc_rf_waddr, dc_rf_wdata
     } = dc_to_rf_bus;
@@ -148,13 +148,11 @@ module ID(
     );
 
     assign rdata1 = (ex_rf_we & (ex_rf_waddr == rs)) ? ex_rf_wdata :
-                    (df_rf_we & (df_rf_waddr == rs)) ? df_rf_wdata :
                     (dc_rf_we & (dc_rf_waddr == rs)) ? dc_rf_wdata :
                     (mem_rf_we & (mem_rf_waddr == rs)) ? mem_rf_wdata :
                     (wb_rf_we & (wb_rf_waddr == rs)) ? wb_rf_wdata :
                                                        rf_rdata1;
     assign rdata2 = (ex_rf_we & (ex_rf_waddr == rt)) ? ex_rf_wdata :
-                    (df_rf_we & (df_rf_waddr == rt)) ? df_rf_wdata :
                     (dc_rf_we & (dc_rf_waddr == rt)) ? dc_rf_wdata :
                     (mem_rf_we & (mem_rf_waddr == rt)) ? mem_rf_wdata :
                     (wb_rf_we & (wb_rf_waddr == rt)) ? wb_rf_wdata :
@@ -172,13 +170,11 @@ module ID(
     );
 
     assign hi = ex_hi_we ? ex_hi_i :
-                df_hi_we ? df_hi_i :
                 dc_hi_we ? dc_hi_i :
                 mem_hi_we ? mem_hi_i :
                 wb_hi_we ? wb_hi_i :
                            hi_o;
     assign lo = ex_lo_we ? ex_lo_i :
-                df_lo_we ? df_lo_i :
                 dc_lo_we ? dc_lo_i :
                 mem_lo_we ? mem_lo_i :
                 wb_lo_we ? wb_lo_i :
@@ -376,7 +372,12 @@ module ID(
     // 0 from alu_res ; 1 from ld_res
     assign sel_rf_res = inst_lw | inst_lh | inst_lhu | inst_lb | inst_lbu; 
 
-    assign stallreq_for_load = ex_is_load | df_is_load | dc_is_load;
+    assign stallreq_for_load =    ex_is_load & ex_rf_we & ((ex_rf_waddr == rs) | (ex_rf_waddr == rt)) & (|ex_rf_waddr)
+                                | dc_is_load & dc_rf_we & ((dc_rf_waddr == rs) | (dc_rf_waddr == rt)) & (|dc_rf_waddr)
+                                | ex_is_store & ex_addr_in_base //| dc_is_store
+                                | ex_is_load & ex_addr_in_base;
+                                // | dc_is_load & dc_addr_in_base;
+                                //ex_is_load | dc_is_load | ex_is_store | dc_is_store;
 
 
 
@@ -434,17 +435,14 @@ module ID(
     wire [31:0] pc_plus_4;
     assign pc_plus_4 = id_pc + 32'h4;
 
-    assign bru_rdata1 = (df_rf_we & (df_rf_waddr == rs))    ? df_rf_wdata :
-                        (dc_rf_we & (dc_rf_waddr == rs))    ? dc_rf_wdata :
+    assign bru_rdata1 = (dc_rf_we & (dc_rf_waddr == rs))    ? dc_rf_wdata :
                         (mem_rf_we & (mem_rf_waddr == rs))  ? mem_rf_wdata :
                         (wb_rf_we & (wb_rf_waddr == rs))    ? wb_rf_wdata :
                                                               rf_rdata1;
-    assign bru_rdata2 = (df_rf_we & (df_rf_waddr == rt))    ? df_rf_wdata :
-                        (dc_rf_we & (dc_rf_waddr == rt))    ? dc_rf_wdata :
+    assign bru_rdata2 = (dc_rf_we & (dc_rf_waddr == rt))    ? dc_rf_wdata :
                         (mem_rf_we & (mem_rf_waddr == rt))  ? mem_rf_wdata :
                         (wb_rf_we & (wb_rf_waddr == rt))    ? wb_rf_wdata :
                                                               rf_rdata2;
-    // break critical path
     assign stallreq_for_bru = ex_rf_we & (ex_rf_waddr==rt | ex_rf_waddr==rs) 
                             & (inst_beq | inst_bne | inst_bgez | inst_bgtz 
                             | inst_blez | inst_bltz | inst_bltzal | inst_bgezal

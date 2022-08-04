@@ -1,4 +1,7 @@
 `include "lib/defines.vh"
+`define CONF_ADDR_INST 32'h8000_0000
+`define CONF_ADDR_DATA 32'h8040_0000
+`define CONF_ADDR_MASK 32'hffc0_0000
 module EX(
     input wire clk,
     input wire rst,
@@ -8,9 +11,14 @@ module EX(
 
     input wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
-    output wire [`EX_TO_DF_WD-1:0] ex_to_df_bus,
+    output wire [`EX_TO_DC_WD-1:0] ex_to_dc_bus,
 
-    output wire [`EX_TO_RF_WD-1:0] ex_to_rf_bus 
+    output wire [`EX_TO_RF_WD-1:0] ex_to_rf_bus,
+
+    output wire data_sram_en,
+    output wire [3:0] data_sram_wen,
+    output wire [31:0] data_sram_addr,
+    output wire [31:0] data_sram_wdata
 );
 
     reg [`ID_TO_EX_WD-1:0] id_to_ex_bus_r;
@@ -109,25 +117,12 @@ module EX(
                           inst_sh | inst_lh | inst_lhu ? {{2{byte_sel[2]}},{2{byte_sel[0]}}} :
                           inst_sw | inst_lw ? 4'b1111 : 4'b0000;
 
-    wire data_sram_en;
-    wire [3:0] data_sram_wen;
-    wire [31:0] data_sram_addr;
-    wire [31:0] data_sram_wdata;
-
     assign data_sram_en     = data_ram_en;
     assign data_sram_wen    = {4{data_ram_wen}}&data_ram_sel;
     assign data_sram_addr   = alu_result;
     assign data_sram_wdata  = inst_sb ? {4{rf_rdata2[7:0]}} :
                               inst_sh ? {2{rf_rdata2[15:0]}} :
                             /*inst_sw*/ rf_rdata2;
-
-    wire [`SRAM_WD-1:0] data_sram_ctl;
-    assign data_sram_ctl = {
-        data_sram_en,
-        data_sram_wen, 
-        data_sram_addr,
-        data_sram_wdata
-    };
 
 // mul & div
     wire inst_mfhi, inst_mflo,  inst_mthi,  inst_mtlo;
@@ -161,33 +156,33 @@ module EX(
     reg next_cnt;
     reg stallreq_for_mul;
     
-    always @ (posedge clk) begin
-        if (rst) begin
-           cnt <= 1'b0; 
-        end
-        else begin
-           cnt <= next_cnt; 
-        end
-    end
+    // always @ (posedge clk) begin
+    //     if (rst) begin
+    //        cnt <= 1'b0; 
+    //     end
+    //     else begin
+    //        cnt <= next_cnt; 
+    //     end
+    // end
 
-    always @ (*) begin
-        if (rst) begin
-            stallreq_for_mul <= 1'b0;
-            next_cnt <= 1'b0;
-        end
-        else if(op_mul&~cnt) begin
-            stallreq_for_mul <= 1'b1;
-            next_cnt <= 1'b1;
-        end
-        else if(op_mul&cnt) begin
-            stallreq_for_mul <= 1'b0;
-            next_cnt <= 1'b0;
-        end
-        else begin
-           stallreq_for_mul <= 1'b0;
-           next_cnt <= 1'b0; 
-        end
-    end
+    // always @ (*) begin
+    //     if (rst) begin
+    //         stallreq_for_mul <= 1'b0;
+    //         next_cnt <= 1'b0;
+    //     end
+    //     else if(op_mul&~cnt) begin
+    //         stallreq_for_mul <= 1'b1;
+    //         next_cnt <= 1'b1;
+    //     end
+    //     else if(op_mul&cnt) begin
+    //         stallreq_for_mul <= 1'b0;
+    //         next_cnt <= 1'b0;
+    //     end
+    //     else begin
+    //        stallreq_for_mul <= 1'b0;
+    //        next_cnt <= 1'b0; 
+    //     end
+    // end
 
     // DIV part
     wire div_ready_i;
@@ -294,7 +289,7 @@ module EX(
         lo_we, lo_o
     };
 
-    assign stallreq_for_ex = stallreq_for_div | stallreq_for_mul;
+    assign stallreq_for_ex = stallreq_for_div;// | stallreq_for_mul;
 
 
 // output
@@ -305,10 +300,15 @@ module EX(
                      : alu_result;
 
     wire ex_is_load;
-    assign ex_is_load = inst_lw | inst_lh | inst_lhu | inst_lb | inst_lbu | inst_sw | inst_sh | inst_sb;
+    wire ex_is_store;
+    wire addr_in_base;
+    assign addr_in_base = (data_sram_addr & `CONF_ADDR_MASK) == `CONF_ADDR_INST;
+    assign ex_is_load = inst_lw | inst_lh | inst_lhu | inst_lb | inst_lbu;
+    assign ex_is_store = inst_sw | inst_sh | inst_sb;
 
-    assign ex_to_df_bus = {
-        data_sram_ctl,
+    assign ex_to_dc_bus = {
+        addr_in_base,   // 153
+        ex_is_store,    // 152
         ex_is_load,     // 151
         mem_op,         // 150:143
         hilo_bus,       // 142:77
@@ -323,6 +323,8 @@ module EX(
     };
 
     assign ex_to_rf_bus = {
+        addr_in_base,
+        ex_is_store,
         ex_is_load,
         hilo_bus,
         rf_we,

@@ -76,8 +76,11 @@ pll_example clock_gen
  );
 
 reg reset_of_clk10M;
+wire clk, resetn;
+assign clk = soc_clk;
+assign resetn = ~reset_of_clk10M;
 // 异步复位，同步释放，将locked信号转为后级电路的复位reset_of_clk10M
-always@(posedge clk_50M or negedge locked) begin
+always@(posedge clk or negedge locked) begin
     if(~locked) reset_of_clk10M <= 1'b1;
     else        reset_of_clk10M <= 1'b0;
 end
@@ -90,9 +93,6 @@ end
 //         // Your Code
 //     end
 // end
-wire clk, resetn;
-assign clk = clk_50M;
-assign resetn = ~reset_of_clk10M;
 
 //reg for base ram
 reg [31:0] base_ram_data_r;

@@ -1,21 +1,18 @@
 `define IF_TO_IC_WD 33
 `define IC_TO_ID_WD 33
 `define ID_TO_EX_WD 237
-`define EX_TO_DF_WD 221
-`define DF_TO_DC_WD 152
+`define EX_TO_DC_WD 154
 `define DC_TO_MEM_WD 151
 `define MEM_TO_WB_WD 136
 `define BR_WD 33
 `define DATA_SRAM_WD 69
-`define EX_TO_RF_WD 105
-`define DF_TO_RF_WD 105
-`define DC_TO_RF_WD 105
+`define EX_TO_RF_WD 107
+`define DC_TO_RF_WD 107
 `define MEM_TO_RF_WD 104
 `define WB_TO_RF_WD 104
 `define HILO_WD 66
-`define SRAM_WD 69
 
-`define StallBus 9
+`define StallBus 8
 `define NoStop 1'b0
 `define Stop 1'b1
 `define ZeroWord 32'b0

@@ -24,14 +24,12 @@ module mycpu_core(
     wire [`IF_TO_IC_WD-1:0] if_to_ic_bus;
     wire [`IC_TO_ID_WD-1:0] ic_to_id_bus;
     wire [`ID_TO_EX_WD-1:0] id_to_ex_bus;
-    wire [`EX_TO_DF_WD-1:0] ex_to_df_bus;
-    wire [`DF_TO_DC_WD-1:0] df_to_dc_bus;
+    wire [`EX_TO_DC_WD-1:0] ex_to_dc_bus;
     wire [`DC_TO_MEM_WD-1:0] dc_to_mem_bus;
     wire [`MEM_TO_WB_WD-1:0] mem_to_wb_bus;
     wire [`BR_WD-1:0] br_bus; 
     wire [`DATA_SRAM_WD-1:0] ex_dt_sram_bus;
     wire [`EX_TO_RF_WD-1:0] ex_to_rf_bus;
-    wire [`DF_TO_RF_WD-1:0] df_to_rf_bus;
     wire [`DC_TO_RF_WD-1:0] dc_to_rf_bus;
     wire [`MEM_TO_RF_WD-1:0] mem_to_rf_bus;
     wire [`WB_TO_RF_WD-1:0] wb_to_rf_bus;
@@ -70,7 +68,6 @@ module mycpu_core(
         .ic_to_id_bus       (ic_to_id_bus      ),
         .inst_sram_rdata    (inst_sram_rdata   ),
         .ex_to_rf_bus       (ex_to_rf_bus      ),
-        .df_to_rf_bus       (df_to_rf_bus      ),
         .dc_to_rf_bus       (dc_to_rf_bus      ),
         .mem_to_rf_bus      (mem_to_rf_bus     ),
         .wb_to_rf_bus       (wb_to_rf_bus      ),
@@ -84,29 +81,19 @@ module mycpu_core(
         .stall           (stall           ),
         .stallreq_for_ex (stallreq_for_ex ),
         .id_to_ex_bus    (id_to_ex_bus    ),
-        .ex_to_df_bus    (ex_to_df_bus    ),
-        .ex_to_rf_bus    (ex_to_rf_bus    )
-    );
-
-    DF u_DF(
-    	.clk             (clk             ),
-        .rst             (rst             ),
-        .stall           (stall           ),
-        .ex_to_df_bus    (ex_to_df_bus    ),
-        .df_to_dc_bus    (df_to_dc_bus    ),
-        .df_to_rf_bus    (df_to_rf_bus    ),
+        .ex_to_dc_bus    (ex_to_dc_bus   ),
+        .ex_to_rf_bus    (ex_to_rf_bus    ),
         .data_sram_en    (data_sram_en    ),
         .data_sram_wen   (data_sram_wen   ),
         .data_sram_addr  (data_sram_addr  ),
         .data_sram_wdata (data_sram_wdata )
     );
-    
 
     DC u_DC(
     	.clk           (clk           ),
         .rst           (rst           ),
         .stall         (stall         ),
-        .df_to_dc_bus  (df_to_dc_bus  ),
+        .ex_to_dc_bus  (ex_to_dc_bus  ),
         .dc_to_mem_bus (dc_to_mem_bus ),
         .dc_to_rf_bus  (dc_to_rf_bus  )
     );

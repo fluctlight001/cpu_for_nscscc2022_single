@@ -24,11 +24,11 @@ module MEM(
         // else if (flush) begin
         //     dc_to_mem_bus_r <= `DC_TO_MEM_WD'b0;
         // end
-        else if (stall[6]==`Stop && stall[7]==`NoStop) begin
+        else if (stall[5]==`Stop && stall[6]==`NoStop) begin
             dc_to_mem_bus_r <= `DC_TO_MEM_WD'b0;
             data_sram_rdata_r <= 32'b0;
         end
-        else if (stall[6]==`NoStop) begin
+        else if (stall[5]==`NoStop) begin
             dc_to_mem_bus_r <= dc_to_mem_bus;
             data_sram_rdata_r <= data_sram_rdata;
         end
