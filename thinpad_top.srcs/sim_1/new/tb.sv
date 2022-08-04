@@ -103,11 +103,11 @@ thinpad_top dut(
     .flash_oe_n(flash_oe_n),
     .flash_ce_n(flash_ce_n),
     .flash_byte_n(flash_byte_n),
-    .flash_we_n(flash_we_n)
-    // .debug_wb_pc      (debug_wb_pc),
-    // .debug_wb_rf_wen  (debug_wb_rf_wen),
-    // .debug_wb_rf_wnum (debug_wb_rf_wnum),
-    // .debug_wb_rf_wdata(debug_wb_rf_wdata)
+    .flash_we_n(flash_we_n),
+    .debug_wb_pc      (debug_wb_pc),
+    .debug_wb_rf_wen  (debug_wb_rf_wen),
+    .debug_wb_rf_wnum (debug_wb_rf_wnum),
+    .debug_wb_rf_wdata(debug_wb_rf_wdata)
 );
 // 时钟源
 clock osc(
