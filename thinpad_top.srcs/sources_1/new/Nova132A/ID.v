@@ -405,7 +405,10 @@ module ID(
                     | {5{sel_rf_dst[1]}} & rt
                     | {5{sel_rf_dst[2]}} & 32'd31;
 
+    wire [31:0] data_ram_addr = rdata1 + {{16{inst[15]}},inst[15:0]};
+
     assign id_to_ex_bus = {
+        data_ram_addr,  // 268:237
         inst_mul,       // 236
         mem_op,         // 235:228
         hilo_op,        // 227:220

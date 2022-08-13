@@ -3,6 +3,7 @@ module mycpu_top(
     input wire clk,
     input wire resetn,
     input wire [5:0] ext_int,
+    input wire stallreq_out,
 
     output wire inst_sram_en,
     output wire [3:0] inst_sram_wen,
@@ -28,6 +29,7 @@ module mycpu_top(
     	.clk               (clk               ),
         .rst               (~resetn           ),
         .int               (ext_int           ),
+        .stallreq_out      (stallreq_out      ),
         .inst_sram_en      (inst_sram_en      ),
         .inst_sram_wen     (inst_sram_wen     ),
         .inst_sram_addr    (inst_sram_addr_v  ),

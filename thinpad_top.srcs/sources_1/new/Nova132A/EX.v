@@ -44,6 +44,7 @@ module EX(
     wire [3:0] sel_alu_src2;
     wire data_ram_en;
     wire data_ram_wen;
+    wire [31:0] data_ram_addr;
     wire [3:0] data_ram_sel;
     wire rf_we;
     wire [4:0] rf_waddr;
@@ -56,6 +57,7 @@ module EX(
     wire inst_mul;
 
     assign {
+        data_ram_addr,  // 268:237
         inst_mul,       // 236
         mem_op,         // 235:228
         hilo_op,        // 227:220
@@ -119,7 +121,7 @@ module EX(
 
     assign data_sram_en     = data_ram_en;
     assign data_sram_wen    = {4{data_ram_wen}}&data_ram_sel;
-    assign data_sram_addr   = alu_result;
+    assign data_sram_addr   = data_ram_addr;
     assign data_sram_wdata  = inst_sb ? {4{rf_rdata2[7:0]}} :
                               inst_sh ? {2{rf_rdata2[15:0]}} :
                             /*inst_sw*/ rf_rdata2;
@@ -156,33 +158,33 @@ module EX(
     reg next_cnt;
     reg stallreq_for_mul;
     
-    // always @ (posedge clk) begin
-    //     if (rst) begin
-    //        cnt <= 1'b0; 
-    //     end
-    //     else begin
-    //        cnt <= next_cnt; 
-    //     end
-    // end
+    always @ (posedge clk) begin
+        if (rst) begin
+           cnt <= 1'b0; 
+        end
+        else begin
+           cnt <= next_cnt; 
+        end
+    end
 
-    // always @ (*) begin
-    //     if (rst) begin
-    //         stallreq_for_mul <= 1'b0;
-    //         next_cnt <= 1'b0;
-    //     end
-    //     else if(op_mul&~cnt) begin
-    //         stallreq_for_mul <= 1'b1;
-    //         next_cnt <= 1'b1;
-    //     end
-    //     else if(op_mul&cnt) begin
-    //         stallreq_for_mul <= 1'b0;
-    //         next_cnt <= 1'b0;
-    //     end
-    //     else begin
-    //        stallreq_for_mul <= 1'b0;
-    //        next_cnt <= 1'b0; 
-    //     end
-    // end
+    always @ (*) begin
+        if (rst) begin
+            stallreq_for_mul <= 1'b0;
+            next_cnt <= 1'b0;
+        end
+        else if(op_mul&~cnt) begin
+            stallreq_for_mul <= 1'b1;
+            next_cnt <= 1'b1;
+        end
+        else if(op_mul&cnt) begin
+            stallreq_for_mul <= 1'b0;
+            next_cnt <= 1'b0;
+        end
+        else begin
+           stallreq_for_mul <= 1'b0;
+           next_cnt <= 1'b0; 
+        end
+    end
 
     // DIV part
     wire div_ready_i;
@@ -289,7 +291,7 @@ module EX(
         lo_we, lo_o
     };
 
-    assign stallreq_for_ex = stallreq_for_div;// | stallreq_for_mul;
+    assign stallreq_for_ex = stallreq_for_div | stallreq_for_mul;
 
 
 // output

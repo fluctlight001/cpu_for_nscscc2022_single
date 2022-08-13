@@ -77,7 +77,7 @@ pll_example clock_gen
 
 reg reset_of_clk10M;
 wire clk, resetn;
-assign clk = soc_clk;
+assign clk = cpu_clk;
 assign resetn = ~reset_of_clk10M;
 // 异步复位，同步释放，将locked信号转为后级电路的复位reset_of_clk10M
 always@(posedge clk or negedge locked) begin
@@ -108,6 +108,11 @@ reg [3:0] ext_ram_be_n_r;
 reg ext_ram_ce_n_r;
 reg ext_ram_oe_n_r;
 reg ext_ram_we_n_r;
+
+wire stallreq_icache;
+wire stallreq_iwb;
+wire stallreq_dcache;
+wire stallreq_dwb;
 
 //cpu inst sram
 wire        cpu_inst_en;
@@ -140,25 +145,50 @@ wire [31:0] conf_addr;
 wire [31:0] conf_wdata;
 wire [31:0] conf_rdata;
 
-assign base_ram_data = ~base_ram_we_n_r ? base_ram_data_r : 32'bz;
-assign ext_ram_data  = ~ext_ram_we_n_r  ? ext_ram_data_r  : 32'bz;
+//icache
+wire ird_req;
+wire [31:0] ird_addr;
+wire ireload;
+wire [255:0] icacheline_new;
 
-assign base_ram_addr = base_ram_addr_r;
-assign base_ram_be_n = base_ram_be_n_r;
-assign base_ram_ce_n = base_ram_ce_n_r;
-assign base_ram_oe_n = base_ram_oe_n_r;
-assign base_ram_we_n = base_ram_we_n_r;
+wire iwr_req;
+wire [3:0] iwr_wstrb;
+wire [31:0] iwr_addr;
+wire [31:0] iwr_data;
+wire iwr_end;
 
-assign ext_ram_addr = ext_ram_addr_r;
-assign ext_ram_be_n = ext_ram_be_n_r;
-assign ext_ram_ce_n = ext_ram_ce_n_r;
-assign ext_ram_oe_n = ext_ram_oe_n_r;
-assign ext_ram_we_n = ext_ram_we_n_r;
+//dcache
+wire drd_req;
+wire [31:0] drd_addr;
+wire dreload;
+wire [255:0] dcacheline_new;
+
+wire dwr_req;
+wire [3:0] dwr_wstrb;
+wire [31:0] dwr_addr;
+wire [31:0] dwr_data;
+wire dwr_end;
+
+// assign base_ram_data = ~base_ram_we_n_r ? base_ram_data_r : 32'bz;
+// assign ext_ram_data  = ~ext_ram_we_n_r  ? ext_ram_data_r  : 32'bz;
+
+// assign base_ram_addr = base_ram_addr_r;
+// assign base_ram_be_n = base_ram_be_n_r;
+// assign base_ram_ce_n = base_ram_ce_n_r;
+// assign base_ram_oe_n = base_ram_oe_n_r;
+// assign base_ram_we_n = base_ram_we_n_r;
+
+// assign ext_ram_addr = ext_ram_addr_r;
+// assign ext_ram_be_n = ext_ram_be_n_r;
+// assign ext_ram_ce_n = ext_ram_ce_n_r;
+// assign ext_ram_oe_n = ext_ram_oe_n_r;
+// assign ext_ram_we_n = ext_ram_we_n_r;
 
 mycpu_top u_mycpu_top(
     .clk               (clk               ),
     .resetn            (resetn            ),
     .ext_int           (6'b0              ),
+    .stallreq_out      (stallreq_icache | stallreq_iwb | stallreq_dcache | stallreq_dwb),
     .inst_sram_en      (cpu_inst_en       ),
     .inst_sram_wen     (cpu_inst_wen      ),
     .inst_sram_addr    (cpu_inst_addr     ),
@@ -200,46 +230,150 @@ bridge_1x3 u_bridge_1x3(
     .conf_rdata      (conf_rdata      )
 );
 
-//in
-    assign cpu_inst_rdata = base_ram_data;
-    assign inst_sram_rdata = base_ram_data;
-    assign data_sram_rdata = ext_ram_data;
+wire [31:0] icache_rdata;
+assign cpu_inst_rdata = icache_rdata;
+assign inst_sram_rdata = icache_rdata;
+cache_top u_icache(
+    .clk           (clk           ),
+    .resetn        (resetn        ),
+    .stallreq      (stallreq_icache      ),
+    .sram_en       (cpu_inst_en | inst_sram_en       ),
+    .sram_wen      (inst_sram_en ? inst_sram_wen : cpu_inst_wen      ),
+    .sram_addr     (inst_sram_en ? inst_sram_addr : cpu_inst_addr      ),
+    .sram_wdata    (inst_sram_en ? inst_sram_wdata : cpu_inst_wdata    ),
+    .sram_rdata    (icache_rdata    ),
+    .rd_req        (ird_req        ),
+    .rd_addr       (ird_addr       ),
+    .reload        (ireload        ),
+    .cacheline_new (icacheline_new )
+);
 
-//out
-always @ (posedge clk) begin
-    if (!resetn) begin
-        base_ram_addr_r <= 19'b0;
-        base_ram_be_n_r <= 4'b0;
-        base_ram_ce_n_r <= 1'b1;
-        base_ram_oe_n_r <= 1'b1;
-        base_ram_we_n_r <= 1'b1;
-        base_ram_data_r <= 32'b0;
+write_buffer u_icache_write_buffer(
+    .clk        (clk        ),
+    .resetn     (resetn     ),
+    .stallreq   (stallreq_iwb   ),
+    .sram_en    (cpu_inst_en | inst_sram_en       ),
+    .sram_wen   (inst_sram_en ? inst_sram_wen : cpu_inst_wen      ),
+    .sram_addr  (inst_sram_en ? inst_sram_addr : cpu_inst_addr      ),
+    .sram_wdata (inst_sram_en ? inst_sram_wdata : cpu_inst_wdata    ),
+    .sram_rdata (    ),
+    .wr_end     (iwr_end     ),
+    .wr_req     (iwr_req     ),
+    .wr_wstrb   (iwr_wstrb   ),
+    .wr_addr    (iwr_addr    ),
+    .wr_data    (iwr_data    )
+);
 
-        ext_ram_addr_r <= 19'b0;
-        ext_ram_be_n_r <= 4'b0;
-        ext_ram_ce_n_r <= 1'b1;
-        ext_ram_oe_n_r <= 1'b1;
-        ext_ram_we_n_r <= 1'b1;
-        ext_ram_data_r <= 32'b0;
-    end
-    else begin
-        base_ram_addr_r <= inst_sram_en ? inst_sram_addr[21:2] : cpu_inst_addr[21:2];
-        base_ram_be_n_r <= (|inst_sram_wen) ? ~inst_sram_wen : 4'b0;
-        base_ram_ce_n_r <= ~cpu_inst_en & ~inst_sram_en;
-        base_ram_oe_n_r <= ~(cpu_inst_en & ~(|cpu_inst_wen)) & ~(inst_sram_en & ~(|inst_sram_wen));
-        base_ram_we_n_r <= ~(cpu_inst_en & (|cpu_inst_wen)) & ~(inst_sram_en & (|inst_sram_wen));
-        base_ram_data_r <= inst_sram_wdata;
+cache_top u_dcache(
+    .clk           (clk           ),
+    .resetn        (resetn        ),
+    .stallreq      (stallreq_dcache      ),
+    .sram_en       (data_sram_en       ),
+    .sram_wen      (data_sram_wen      ),
+    .sram_addr     (data_sram_addr     ),
+    .sram_wdata    (data_sram_wdata    ),
+    .sram_rdata    (data_sram_rdata    ),
+    .rd_req        (drd_req        ),
+    .rd_addr       (drd_addr       ),
+    .reload        (dreload        ),
+    .cacheline_new (dcacheline_new )
+);
 
-        ext_ram_addr_r <= data_sram_addr[21:2];
-        ext_ram_be_n_r <= (|data_sram_wen) ? ~data_sram_wen : 4'b0;
-        ext_ram_ce_n_r <= ~data_sram_en;
-        ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
-        ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));
-        ext_ram_data_r <= data_sram_wdata;
-    end
-end
+write_buffer u_dcache_write_buffer(
+    .clk        (clk        ),
+    .resetn     (resetn     ),
+    .stallreq   (stallreq_dwb   ),
+    .sram_en    (data_sram_en    ),
+    .sram_wen   (data_sram_wen   ),
+    .sram_addr  (data_sram_addr  ),
+    .sram_wdata (data_sram_wdata ),
+    .sram_rdata ( ),
+    .wr_end     (dwr_end     ),
+    .wr_req     (dwr_req     ),
+    .wr_wstrb   (dwr_wstrb   ),
+    .wr_addr    (dwr_addr    ),
+    .wr_data    (dwr_data    )
+);
 
-wire a;
+sram_ctrl u_sram_ctrl(
+    .clk            (clk            ),
+    .resetn         (resetn         ),
+
+    .base_ram_data  (base_ram_data  ),
+    .base_ram_addr  (base_ram_addr  ),
+    .base_ram_be_n  (base_ram_be_n  ),
+    .base_ram_ce_n  (base_ram_ce_n  ),
+    .base_ram_oe_n  (base_ram_oe_n  ),
+    .base_ram_we_n  (base_ram_we_n  ),
+    .ext_ram_data   (ext_ram_data   ),
+    .ext_ram_addr   (ext_ram_addr   ),
+    .ext_ram_be_n   (ext_ram_be_n   ),
+    .ext_ram_ce_n   (ext_ram_ce_n   ),
+    .ext_ram_oe_n   (ext_ram_oe_n   ),
+    .ext_ram_we_n   (ext_ram_we_n   ),
+
+    .ird_req        (ird_req        ),
+    .ird_addr       (ird_addr       ),
+    .ireload        (ireload        ),
+    .icacheline_new (icacheline_new ),
+    .iwr_req        (iwr_req        ),
+    .iwr_wstrb      (iwr_wstrb      ),
+    .iwr_addr       (iwr_addr       ),
+    .iwr_data       (iwr_data       ),
+    .iwr_end        (iwr_end        ),
+
+    .drd_req        (drd_req        ),
+    .drd_addr       (drd_addr       ),
+    .dreload        (dreload        ),
+    .dcacheline_new (dcacheline_new ),
+    .dwr_req        (dwr_req        ),
+    .dwr_wstrb      (dwr_wstrb      ),
+    .dwr_addr       (dwr_addr       ),
+    .dwr_data       (dwr_data       ),
+    .dwr_end        (dwr_end        )
+);
+
+
+// //in
+//     assign cpu_inst_rdata = base_ram_data;
+//     assign inst_sram_rdata = base_ram_data;
+//     assign data_sram_rdata = ext_ram_data;
+
+// //out
+// always @ (posedge clk) begin
+//     if (!resetn) begin
+//         base_ram_addr_r <= 19'b0;
+//         base_ram_be_n_r <= 4'b0;
+//         base_ram_ce_n_r <= 1'b1;
+//         base_ram_oe_n_r <= 1'b1;
+//         base_ram_we_n_r <= 1'b1;
+//         base_ram_data_r <= 32'b0;
+
+//         ext_ram_addr_r <= 19'b0;
+//         ext_ram_be_n_r <= 4'b0;
+//         ext_ram_ce_n_r <= 1'b1;
+//         ext_ram_oe_n_r <= 1'b1;
+//         ext_ram_we_n_r <= 1'b1;
+//         ext_ram_data_r <= 32'b0;
+//     end
+//     else begin
+//         base_ram_addr_r <= inst_sram_en ? inst_sram_addr[21:2] : cpu_inst_addr[21:2];
+//         base_ram_be_n_r <= (|inst_sram_wen) ? ~inst_sram_wen : 4'b0;
+//         base_ram_ce_n_r <= ~cpu_inst_en & ~inst_sram_en;
+//         base_ram_oe_n_r <= ~(cpu_inst_en & ~(|cpu_inst_wen)) & ~(inst_sram_en & ~(|inst_sram_wen));
+//         base_ram_we_n_r <= ~(cpu_inst_en & (|cpu_inst_wen)) & ~(inst_sram_en & (|inst_sram_wen));
+//         base_ram_data_r <= inst_sram_wdata;
+
+//         ext_ram_addr_r <= data_sram_addr[21:2];
+//         ext_ram_be_n_r <= (|data_sram_wen) ? ~data_sram_wen : 4'b0;
+//         ext_ram_ce_n_r <= ~data_sram_en;
+//         ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
+//         ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));
+//         ext_ram_data_r <= data_sram_wdata;
+//     end
+// end
+
+// wire a;
 
 confreg u_confreg(
     .clk        (clk        ),

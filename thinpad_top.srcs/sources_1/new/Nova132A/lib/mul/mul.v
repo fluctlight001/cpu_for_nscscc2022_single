@@ -73,7 +73,7 @@ module mul (
   assign code[15][1] = (~ext_ina[29] & ext_ina[30] & ext_ina[31]) + (~ext_ina[30] & ext_ina[31]);
   assign code[16][1] = 1'b0;
       
-  always @ (*) begin
+  always @ (posedge clk) begin
     //2-bit booth encoding
     case(code[ 0])
       2'b00: begin
