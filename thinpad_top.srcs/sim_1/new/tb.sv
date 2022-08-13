@@ -4,7 +4,7 @@
 
 module tb;
 
-wire clk_50M, clk_11M0592;
+wire clk_50M, clk_11M0592, clk_100M;
 
 reg clock_btn = 0;         //BTN5手动时钟按钮开关，带消抖电路，按下时为1
 reg reset_btn = 0;         //BTN6手动复位按钮开关，带消抖电路，按下时为1
@@ -103,16 +103,17 @@ thinpad_top dut(
     .flash_oe_n(flash_oe_n),
     .flash_ce_n(flash_ce_n),
     .flash_byte_n(flash_byte_n),
-    .flash_we_n(flash_we_n),
-    .debug_wb_pc      (debug_wb_pc),
-    .debug_wb_rf_wen  (debug_wb_rf_wen),
-    .debug_wb_rf_wnum (debug_wb_rf_wnum),
-    .debug_wb_rf_wdata(debug_wb_rf_wdata)
+    .flash_we_n(flash_we_n)
+    // .debug_wb_pc      (debug_wb_pc),
+    // .debug_wb_rf_wen  (debug_wb_rf_wen),
+    // .debug_wb_rf_wnum (debug_wb_rf_wnum),
+    // .debug_wb_rf_wdata(debug_wb_rf_wdata)
 );
 // 时钟源
 clock osc(
     .clk_11M0592(clk_11M0592),
-    .clk_50M    (clk_50M)
+    .clk_50M    (clk_50M),
+    .clk_100M   (clk_100M)
 );
 
 // BaseRAM 仿真模型
@@ -218,7 +219,7 @@ end
 
 
 
-assign soc_clk = clk_50M;
+assign soc_clk = clk_100M;
 
 //wdata[i*8+7 : i*8] is valid, only wehile wen[i] is valid
 wire [31:0] debug_wb_rf_wdata_v;
