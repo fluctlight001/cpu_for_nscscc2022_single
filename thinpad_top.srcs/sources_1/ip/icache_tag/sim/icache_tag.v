@@ -1,7 +1,4 @@
-
-// file: pll_example.v
-// 
-// (c) Copyright 2008 - 2013 Xilinx, Inc. All rights reserved.
+// (c) Copyright 1995-2022 Xilinx, Inc. All rights reserved.
 // 
 // This file contains confidential and proprietary information
 // of Xilinx, Inc. and is protected under U.S. and
@@ -47,49 +44,79 @@
 // THIS COPYRIGHT NOTICE AND DISCLAIMER MUST BE RETAINED AS
 // PART OF THIS FILE AT ALL TIMES.
 // 
-//----------------------------------------------------------------------------
-// User entered comments
-//----------------------------------------------------------------------------
-// None
-//
-//----------------------------------------------------------------------------
-//  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
-//   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
-//----------------------------------------------------------------------------
-// clk_out1__110.00000______0.000______50.0______147.123____162.020
-// clk_out2__50.00000______0.000______50.0______176.495____162.020
-//
-//----------------------------------------------------------------------------
-// Input Clock   Freq (MHz)    Input Jitter (UI)
-//----------------------------------------------------------------------------
-// __primary______________50____________0.010
+// DO NOT MODIFY THIS FILE.
 
-`timescale 1ps/1ps
 
-(* CORE_GENERATION_INFO = "pll_example,clk_wiz_v6_0_4_0_0,{component_name=pll_example,use_phase_alignment=true,use_min_o_jitter=false,use_max_i_jitter=false,use_dyn_phase_shift=false,use_inclk_switchover=false,use_dyn_reconfig=false,enable_axi=0,feedback_source=FDBK_AUTO,PRIMITIVE=MMCM,num_out_clk=2,clkin1_period=20.000,clkin2_period=10.0,use_power_down=false,use_reset=true,use_locked=true,use_inclk_stopped=false,feedback_type=SINGLE,CLOCK_MGR_TYPE=NA,manual_override=false}" *)
+// IP VLNV: xilinx.com:ip:dist_mem_gen:8.0
+// IP Revision: 13
 
-module pll_example 
- (
-  // Clock out ports
-  output        clk_out1,
-  output        clk_out2,
-  // Status and control signals
-  input         reset,
-  output        locked,
- // Clock in ports
-  input         clk_in1
- );
+`timescale 1ns/1ps
 
-  pll_example_clk_wiz inst
-  (
-  // Clock out ports  
-  .clk_out1(clk_out1),
-  .clk_out2(clk_out2),
-  // Status and control signals               
-  .reset(reset), 
-  .locked(locked),
- // Clock in ports
-  .clk_in1(clk_in1)
+(* DowngradeIPIdentifiedWarnings = "yes" *)
+module icache_tag (
+  a,
+  d,
+  clk,
+  we,
+  spo
+);
+
+input wire [5 : 0] a;
+input wire [20 : 0] d;
+input wire clk;
+input wire we;
+output wire [20 : 0] spo;
+
+  dist_mem_gen_v8_0_13 #(
+    .C_FAMILY("artix7"),
+    .C_ADDR_WIDTH(6),
+    .C_DEFAULT_DATA("0"),
+    .C_DEPTH(64),
+    .C_HAS_CLK(1),
+    .C_HAS_D(1),
+    .C_HAS_DPO(0),
+    .C_HAS_DPRA(0),
+    .C_HAS_I_CE(0),
+    .C_HAS_QDPO(0),
+    .C_HAS_QDPO_CE(0),
+    .C_HAS_QDPO_CLK(0),
+    .C_HAS_QDPO_RST(0),
+    .C_HAS_QDPO_SRST(0),
+    .C_HAS_QSPO(0),
+    .C_HAS_QSPO_CE(0),
+    .C_HAS_QSPO_RST(0),
+    .C_HAS_QSPO_SRST(0),
+    .C_HAS_SPO(1),
+    .C_HAS_WE(1),
+    .C_MEM_INIT_FILE("no_coe_file_loaded"),
+    .C_ELABORATION_DIR("./"),
+    .C_MEM_TYPE(1),
+    .C_PIPELINE_STAGES(0),
+    .C_QCE_JOINED(0),
+    .C_QUALIFY_WE(0),
+    .C_READ_MIF(0),
+    .C_REG_A_D_INPUTS(0),
+    .C_REG_DPRA_INPUT(0),
+    .C_SYNC_ENABLE(1),
+    .C_WIDTH(21),
+    .C_PARSER_TYPE(1)
+  ) inst (
+    .a(a),
+    .d(d),
+    .dpra(6'B0),
+    .clk(clk),
+    .we(we),
+    .i_ce(1'D1),
+    .qspo_ce(1'D1),
+    .qdpo_ce(1'D1),
+    .qdpo_clk(1'D0),
+    .qspo_rst(1'D0),
+    .qdpo_rst(1'D0),
+    .qspo_srst(1'D0),
+    .qdpo_srst(1'D0),
+    .spo(spo),
+    .dpo(),
+    .qspo(),
+    .qdpo()
   );
-
 endmodule

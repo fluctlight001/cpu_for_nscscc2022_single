@@ -32,6 +32,7 @@ module IF(
         if (rst) begin
             pc_reg <= 32'h7fff_fffc;
             // pc_reg <= 32'h8000_3008;
+            // pc_reg <= 32'h8000_3038;
         end
         else if (stall[0]==`NoStop) begin
             pc_reg <= next_pc;

@@ -50,17 +50,24 @@ module sram_ctrl(
     input wire [31:0] iwr_data,
     output reg iwr_end,
 
-    //dcache
-    input wire drd_req,
-    input wire [31:0] drd_addr,
-    output reg dreload,
-    output reg [255:0] dcacheline_new,
+    // //dcache
+    // input wire drd_req,
+    // input wire [31:0] drd_addr,
+    // output reg dreload,
+    // output reg [255:0] dcacheline_new,
 
-    input wire dwr_req,
-    input wire [3:0] dwr_wstrb,
-    input wire [31:0] dwr_addr,
-    input wire [31:0] dwr_data,
-    output reg dwr_end
+    // input wire dwr_req,
+    // input wire [3:0] dwr_wstrb,
+    // input wire [31:0] dwr_addr,
+    // input wire [31:0] dwr_data,
+    // output reg dwr_end
+    //data sram
+    input wire        data_sram_en,
+    input wire [3 :0] data_sram_wen,
+    input wire [31:0] data_sram_addr,
+    input wire [31:0] data_sram_wdata,
+    output wire [31:0] data_sram_rdata,
+    output wire stallreq
 );
     //reg for base ram
     reg [31:0] base_ram_data_r;
@@ -212,7 +219,96 @@ module sram_ctrl(
         // end
     end
 
-    always @(posedge clk) begin
+    // always @(posedge clk) begin
+    //     if (!resetn) begin
+    //         ext_ram_addr_r <= 20'b0;
+    //         ext_ram_be_n_r <= 4'b0;
+    //         ext_ram_ce_n_r <= 1'b1;
+    //         ext_ram_oe_n_r <= 1'b1;
+    //         ext_ram_we_n_r <= 1'b1;
+    //         ext_ram_data_r <= 32'b0;
+
+    //         stage_d <= `STAGE_WD'b1;
+    //         drd_req_r <= 1'b0;
+    //         dwr_req_r <= 1'b0;
+    //         dcache_offset <= 4'b0;
+    //         dcache_offset_w <= 4'b0;
+    //         dreload <= 1'b0;
+    //         dwr_end <= 1'b0;
+    //         dcacheline_new <= 256'b0;
+
+    //     end
+    //     else begin
+    //         case(1'b1)
+    //             stage_d[0]:begin
+    //                 dreload <= 1'b0;
+    //                 dwr_end <= 1'b0;
+    //                 dcacheline_new <= 256'b0;
+    //                 drd_req_r <= drd_req;
+    //                 dwr_req_r <= dwr_req;
+    //                 if (drd_req) begin
+    //                     ext_ram_addr_r <= drd_addr[21:2];
+    //                     ext_ram_be_n_r <= 4'b0;
+    //                     ext_ram_ce_n_r <= 1'b0;
+    //                     ext_ram_oe_n_r <= 1'b0;
+    //                     ext_ram_we_n_r <= 1'b1;
+    //                     ext_ram_data_r <= 32'b0;
+    //                     stage_d <= stage_d << 1;
+    //                     // dcache_offset <= 4'b0;
+    //                 end
+    //                 else if (dwr_req) begin
+    //                     ext_ram_addr_r <= dwr_addr[21:2];
+    //                     ext_ram_be_n_r <= 4'b0;
+    //                     ext_ram_ce_n_r <= 1'b0;
+    //                     ext_ram_oe_n_r <= 1'b1;
+    //                     ext_ram_we_n_r <= 1'b0;
+    //                     ext_ram_data_r <= dwr_data;
+    //                     stage_d <= 1'b0;
+    //                     dwr_end <= 1'b1;
+    //                     // dcache_offset_w <= 4'b0;
+    //                 end
+    //             end
+    //             stage_d[1]:begin
+    //                 stage_d <= stage_d << 1;
+    //             end
+    //             stage_d[2]:begin
+    //                 dcacheline_new[dcache_offset*32+:32] <= ext_ram_data;
+    //                 if (dcache_offset == 4'b0111) begin
+    //                     ext_ram_addr_r <= 20'b0;
+    //                     ext_ram_be_n_r <= 4'b0;
+    //                     ext_ram_ce_n_r <= 1'b1;
+    //                     ext_ram_oe_n_r <= 1'b1;
+    //                     ext_ram_we_n_r <= 1'b1;
+    //                     ext_ram_data_r <= 32'b0;
+    //                     stage_d <= 1'b0;
+    //                     dreload <= 1'b1;
+    //                 end
+    //                 else begin
+    //                     ext_ram_addr_r <= drd_addr[21:2] + dcache_offset + 1'b1;
+    //                     dcache_offset <= dcache_offset + 1'b1;
+    //                     stage_d <= stage_d >> 1;
+    //                 end
+    //             end
+    //             default:begin
+    //                 stage_d <= 1'b1;
+    //                 dreload <= 1'b0;
+    //                 dwr_end <= 1'b0;
+    //                 ext_ram_addr_r <= 20'b0;
+    //                 ext_ram_be_n_r <= 4'b0;
+    //                 ext_ram_ce_n_r <= 1'b1;
+    //                 ext_ram_oe_n_r <= 1'b1;
+    //                 ext_ram_we_n_r <= 1'b1;
+    //                 ext_ram_data_r <= 32'b0;
+    //                 dcache_offset <= 4'b0;
+    //             end
+    //         endcase
+    //     end
+    // end
+
+    reg data_end;
+    assign stallreq = data_sram_en & ~data_end;
+    assign data_sram_rdata = ext_ram_data;
+    always @ (posedge clk) begin
         if (!resetn) begin
             ext_ram_addr_r <= 20'b0;
             ext_ram_be_n_r <= 4'b0;
@@ -222,79 +318,42 @@ module sram_ctrl(
             ext_ram_data_r <= 32'b0;
 
             stage_d <= `STAGE_WD'b1;
-            drd_req_r <= 1'b0;
-            dwr_req_r <= 1'b0;
-            dcache_offset <= 4'b0;
-            dcache_offset_w <= 4'b0;
-            dreload <= 1'b0;
-            dwr_end <= 1'b0;
-            dcacheline_new <= 256'b0;
-
+            data_end <=1'b0;
         end
         else begin
-            case(1'b1)
+            case (1'b1)
                 stage_d[0]:begin
-                    dreload <= 1'b0;
-                    dwr_end <= 1'b0;
-                    dcacheline_new <= 256'b0;
-                    drd_req_r <= drd_req;
-                    dwr_req_r <= dwr_req;
-                    if (drd_req) begin
-                        ext_ram_addr_r <= drd_addr[21:2];
-                        ext_ram_be_n_r <= 4'b0;
-                        ext_ram_ce_n_r <= 1'b0;
-                        ext_ram_oe_n_r <= 1'b0;
-                        ext_ram_we_n_r <= 1'b1;
-                        ext_ram_data_r <= 32'b0;
+                    ext_ram_addr_r <= data_sram_addr[21:2];
+                    ext_ram_be_n_r <= (data_sram_wen) ? ~data_sram_wen : 4'b0;
+                    ext_ram_ce_n_r <= ~data_sram_en;
+                    ext_ram_oe_n_r <= ~(data_sram_en & ~(|data_sram_wen));
+                    ext_ram_we_n_r <= ~(data_sram_en & (|data_sram_wen));
+                    ext_ram_data_r <= data_sram_wdata;
+                    if (data_sram_en & ~(|data_sram_wen)) begin
                         stage_d <= stage_d << 1;
-                        // dcache_offset <= 4'b0;
+                        data_end <= 1'b0;
                     end
-                    else if (dwr_req) begin
-                        ext_ram_addr_r <= dwr_addr[21:2];
-                        ext_ram_be_n_r <= 4'b0;
-                        ext_ram_ce_n_r <= 1'b0;
-                        ext_ram_oe_n_r <= 1'b1;
-                        ext_ram_we_n_r <= 1'b0;
-                        ext_ram_data_r <= dwr_data;
+                    else if (data_sram_en & (|data_sram_wen)) begin
                         stage_d <= 1'b0;
-                        dwr_end <= 1'b1;
-                        // dcache_offset_w <= 4'b0;
+                        data_end <= 1'b1;
                     end
+                    // data_end <= 1'b0;
                 end
                 stage_d[1]:begin
-                    stage_d <= stage_d << 1;
-                end
-                stage_d[2]:begin
-                    dcacheline_new[dcache_offset*32+:32] <= ext_ram_data;
-                    if (dcache_offset == 4'b0111) begin
-                        ext_ram_addr_r <= 20'b0;
-                        ext_ram_be_n_r <= 4'b0;
-                        ext_ram_ce_n_r <= 1'b1;
-                        ext_ram_oe_n_r <= 1'b1;
-                        ext_ram_we_n_r <= 1'b1;
-                        ext_ram_data_r <= 32'b0;
-                        stage_d <= 1'b0;
-                        dreload <= 1'b1;
-                    end
-                    else begin
-                        ext_ram_addr_r <= drd_addr[21:2] + dcache_offset + 1'b1;
-                        dcache_offset <= dcache_offset + 1'b1;
-                        stage_d <= stage_d >> 1;
-                    end
+                    stage_d <= 1'b0;
+                    data_end <= 1'b1;
                 end
                 default:begin
                     stage_d <= 1'b1;
-                    dreload <= 1'b0;
-                    dwr_end <= 1'b0;
                     ext_ram_addr_r <= 20'b0;
                     ext_ram_be_n_r <= 4'b0;
                     ext_ram_ce_n_r <= 1'b1;
                     ext_ram_oe_n_r <= 1'b1;
                     ext_ram_we_n_r <= 1'b1;
                     ext_ram_data_r <= 32'b0;
-                    dcache_offset <= 4'b0;
+                    data_end <= 1'b0;
                 end
-            endcase
+            endcase 
         end
     end
 endmodule

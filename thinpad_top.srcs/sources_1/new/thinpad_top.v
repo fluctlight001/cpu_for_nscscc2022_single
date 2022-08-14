@@ -113,6 +113,7 @@ wire stallreq_icache;
 wire stallreq_iwb;
 wire stallreq_dcache;
 wire stallreq_dwb;
+wire stallreq_data;
 
 //cpu inst sram
 wire        cpu_inst_en;
@@ -188,7 +189,7 @@ mycpu_top u_mycpu_top(
     .clk               (clk               ),
     .resetn            (resetn            ),
     .ext_int           (6'b0              ),
-    .stallreq_out      (stallreq_icache | stallreq_iwb | stallreq_dcache | stallreq_dwb),
+    .stallreq_out      (stallreq_icache | stallreq_iwb | stallreq_data),
     .inst_sram_en      (cpu_inst_en       ),
     .inst_sram_wen     (cpu_inst_wen      ),
     .inst_sram_addr    (cpu_inst_addr     ),
@@ -264,36 +265,36 @@ write_buffer u_icache_write_buffer(
     .wr_data    (iwr_data    )
 );
 
-cache_top u_dcache(
-    .clk           (clk           ),
-    .resetn        (resetn        ),
-    .stallreq      (stallreq_dcache      ),
-    .sram_en       (data_sram_en       ),
-    .sram_wen      (data_sram_wen      ),
-    .sram_addr     (data_sram_addr     ),
-    .sram_wdata    (data_sram_wdata    ),
-    .sram_rdata    (data_sram_rdata    ),
-    .rd_req        (drd_req        ),
-    .rd_addr       (drd_addr       ),
-    .reload        (dreload        ),
-    .cacheline_new (dcacheline_new )
-);
+// cache_top u_dcache(
+//     .clk           (clk           ),
+//     .resetn        (resetn        ),
+//     .stallreq      (stallreq_dcache      ),
+//     .sram_en       (data_sram_en       ),
+//     .sram_wen      (data_sram_wen      ),
+//     .sram_addr     (data_sram_addr     ),
+//     .sram_wdata    (data_sram_wdata    ),
+//     .sram_rdata    (data_sram_rdata    ),
+//     .rd_req        (drd_req        ),
+//     .rd_addr       (drd_addr       ),
+//     .reload        (dreload        ),
+//     .cacheline_new (dcacheline_new )
+// );
 
-write_buffer u_dcache_write_buffer(
-    .clk        (clk        ),
-    .resetn     (resetn     ),
-    .stallreq   (stallreq_dwb   ),
-    .sram_en    (data_sram_en    ),
-    .sram_wen   (data_sram_wen   ),
-    .sram_addr  (data_sram_addr  ),
-    .sram_wdata (data_sram_wdata ),
-    .sram_rdata ( ),
-    .wr_end     (dwr_end     ),
-    .wr_req     (dwr_req     ),
-    .wr_wstrb   (dwr_wstrb   ),
-    .wr_addr    (dwr_addr    ),
-    .wr_data    (dwr_data    )
-);
+// write_buffer u_dcache_write_buffer(
+//     .clk        (clk        ),
+//     .resetn     (resetn     ),
+//     .stallreq   (stallreq_dwb   ),
+//     .sram_en    (data_sram_en    ),
+//     .sram_wen   (data_sram_wen   ),
+//     .sram_addr  (data_sram_addr  ),
+//     .sram_wdata (data_sram_wdata ),
+//     .sram_rdata ( ),
+//     .wr_end     (dwr_end     ),
+//     .wr_req     (dwr_req     ),
+//     .wr_wstrb   (dwr_wstrb   ),
+//     .wr_addr    (dwr_addr    ),
+//     .wr_data    (dwr_data    )
+// );
 
 sram_ctrl u_sram_ctrl(
     .clk            (clk            ),
@@ -322,15 +323,22 @@ sram_ctrl u_sram_ctrl(
     .iwr_data       (iwr_data       ),
     .iwr_end        (iwr_end        ),
 
-    .drd_req        (drd_req        ),
-    .drd_addr       (drd_addr       ),
-    .dreload        (dreload        ),
-    .dcacheline_new (dcacheline_new ),
-    .dwr_req        (dwr_req        ),
-    .dwr_wstrb      (dwr_wstrb      ),
-    .dwr_addr       (dwr_addr       ),
-    .dwr_data       (dwr_data       ),
-    .dwr_end        (dwr_end        )
+    // .drd_req        (drd_req        ),
+    // .drd_addr       (drd_addr       ),
+    // .dreload        (dreload        ),
+    // .dcacheline_new (dcacheline_new ),
+    // .dwr_req        (dwr_req        ),
+    // .dwr_wstrb      (dwr_wstrb      ),
+    // .dwr_addr       (dwr_addr       ),
+    // .dwr_data       (dwr_data       ),
+    // .dwr_end        (dwr_end        )
+    
+    .data_sram_en      (data_sram_en      ),
+    .data_sram_wen     (data_sram_wen     ),
+    .data_sram_addr    (data_sram_addr    ),
+    .data_sram_wdata   (data_sram_wdata   ),
+    .data_sram_rdata   (data_sram_rdata   ),
+    .stallreq          (stallreq_data     )
 );
 
 
