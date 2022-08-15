@@ -39,11 +39,14 @@ module mycpu_core(
     wire stallreq_for_bru;
     wire stallreq_for_ex;
 
+    wire [`BR_WD-1:0] bp_bus;
+    wire [`BR_WD-1:0] bp_to_ex_bus;
     IF u_IF(
     	.clk             (clk             ),
         .rst             (rst             ),
         .stall           (stall           ),
         .br_bus          (br_bus          ),
+        .bp_bus          (bp_bus          ),
         .if_to_ic_bus    (if_to_ic_bus    ),
         .inst_sram_en    (inst_sram_en    ),
         .inst_sram_wen   (inst_sram_wen   ),
@@ -59,6 +62,17 @@ module mycpu_core(
         .br_bus       (br_bus       ),
         .ic_to_id_bus (ic_to_id_bus )
     );
+
+    bpu u_bpu(
+    	.clk          (clk          ),
+        .rst          (rst          ),
+        .stall        (stall        ),
+        .if_pc        (if_to_ic_bus[31:0]),
+        .br_bus       (br_bus       ),
+        .bp_bus       (bp_bus       ),
+        .bp_to_ex_bus (bp_to_ex_bus )
+    );
+    
 
     ID u_ID(
     	.clk                (clk               ),
@@ -82,6 +96,7 @@ module mycpu_core(
         .stall           (stall           ),
         .stallreq_for_ex (stallreq_for_ex ),
         .br_bus          (br_bus          ),
+        .bp_to_ex_bus    (bp_to_ex_bus    ),
         .id_to_ex_bus    (id_to_ex_bus    ),
         .ex_to_dc_bus    (ex_to_dc_bus    ),
         .ex_to_rf_bus    (ex_to_rf_bus    ),

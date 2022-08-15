@@ -331,7 +331,7 @@ module sram_ctrl(
                     ext_ram_data_r <= data_sram_wdata;
                     if (data_sram_en & ~(|data_sram_wen)) begin
                         stage_d <= stage_d << 1;
-                        data_end <= 1'b0;
+                        data_end <= 1'b1;
                     end
                     else if (data_sram_en & (|data_sram_wen)) begin
                         stage_d <= 1'b0;
@@ -341,7 +341,7 @@ module sram_ctrl(
                 end
                 stage_d[1]:begin
                     stage_d <= 1'b0;
-                    data_end <= 1'b1;
+                    data_end <= 1'b0;
                 end
                 default:begin
                     stage_d <= 1'b1;

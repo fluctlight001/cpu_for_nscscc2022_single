@@ -8,7 +8,8 @@ module EX(
     // input wire flush,
     input wire [`StallBus-1:0] stall,
     output wire stallreq_for_ex,
-    output wire [32:0] br_bus,
+    output wire [`BR_WD-1:0] br_bus,
+    input wire [`BR_WD-1:0] bp_to_ex_bus,
 
     input wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
@@ -299,12 +300,13 @@ module EX(
 // bru
 
     bru u_bru(
-        .pc     (ex_pc     ),
-        .inst   (inst   ),
-        .rdata1 (rf_rdata1 ),
-        .rdata2 (rf_rdata2 ),
-        .bru_op (bru_op ),
-        .br_bus (br_bus )
+        .pc             (ex_pc       ),
+        .inst           (inst        ),
+        .rdata1         (rf_rdata1   ),
+        .rdata2         (rf_rdata2   ),
+        .bru_op         (bru_op      ),
+        .br_bus         (br_bus      ),
+        .bp_to_ex_bus   (bp_to_ex_bus)
     );
     
 
