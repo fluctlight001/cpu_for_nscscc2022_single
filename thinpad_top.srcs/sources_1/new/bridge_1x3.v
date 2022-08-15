@@ -84,8 +84,8 @@ module bridge_1x3(
     reg sel_data_r; // reg of sel_dram 
     reg sel_conf_r; // reg of sel_conf 
 
-    assign sel_inst = (cpu_data_addr & `CONF_ADDR_MASK) == `CONF_ADDR_INST;
-    assign sel_data = (cpu_data_addr & `CONF_ADDR_MASK) == `CONF_ADDR_DATA;
+    assign sel_inst = ~|((cpu_data_addr & `CONF_ADDR_MASK) ^ `CONF_ADDR_INST);
+    assign sel_data = ~|((cpu_data_addr & `CONF_ADDR_MASK) ^ `CONF_ADDR_DATA);
     assign sel_conf = ~sel_inst & ~sel_data;
     
     // inst sram

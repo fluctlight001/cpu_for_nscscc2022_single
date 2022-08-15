@@ -31,6 +31,7 @@ module IF(
     always @ (posedge clk) begin
         if (rst) begin
             pc_reg <= 32'h7fff_fffc;
+            // pc_reg <= 32'hbfbf_fffc;
             // pc_reg <= 32'h8000_3008;
             // pc_reg <= 32'h8000_3038;
         end

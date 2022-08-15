@@ -73,7 +73,7 @@ module mul (
   assign code[15][1] = (~ext_ina[29] & ext_ina[30] & ext_ina[31]) + (~ext_ina[30] & ext_ina[31]);
   assign code[16][1] = 1'b0;
       
-  always @ (posedge clk) begin
+  always @ (*) begin
     //2-bit booth encoding
     case(code[ 0])
       2'b00: begin
@@ -428,7 +428,7 @@ module mul (
   reg signed [64:0] two_temp4_s [1:0];
   reg signed [64:0] carry1 [1:0];
   
-  always @ (*) begin
+  always @ (posedge clk) begin
     if (!resetn) begin
       two_temp4_s[0] <= 65'b0;
       two_temp4_s[1] <= 65'b0;
