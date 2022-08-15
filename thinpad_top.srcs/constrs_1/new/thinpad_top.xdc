@@ -1,18 +1,18 @@
 #Clock
-set_property -dict {PACKAGE_PIN K21 IOSTANDARD LVCMOS33} [get_ports clk_50M]
-set_property -dict {PACKAGE_PIN H21 IOSTANDARD LVCMOS33} [get_ports clk_11M0592]
+set_property -dict {PACKAGE_PIN K21 IOSTANDARD LVCMOS33} [get_ports clk_50M] ;#50MHz main clock in
+set_property -dict {PACKAGE_PIN H21 IOSTANDARD LVCMOS33} [get_ports clk_11M0592] ;#11.0592MHz clock for UART
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk_11M0592_IBUF]
 
 create_clock -period 20.000 -name clk_50M -waveform {0.000 10.000} [get_ports clk_50M]
 create_clock -period 90.422 -name clk_11M0592 -waveform {0.000 45.211} [get_ports clk_11M0592]
 
 #Touch Button
-set_property -dict {PACKAGE_PIN T2 IOSTANDARD LVCMOS33} [get_ports {touch_btn[0]}]
-set_property -dict {PACKAGE_PIN M1 IOSTANDARD LVCMOS33} [get_ports {touch_btn[1]}]
-set_property -dict {PACKAGE_PIN P3 IOSTANDARD LVCMOS33} [get_ports {touch_btn[2]}]
-set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports {touch_btn[3]}]
-set_property -dict {PACKAGE_PIN U1 IOSTANDARD LVCMOS33} [get_ports clock_btn]
-set_property -dict {PACKAGE_PIN U5 IOSTANDARD LVCMOS33} [get_ports reset_btn]
+set_property -dict {PACKAGE_PIN T2 IOSTANDARD LVCMOS33} [get_ports touch_btn[0]] ;#BTN1
+set_property -dict {PACKAGE_PIN M1 IOSTANDARD LVCMOS33} [get_ports touch_btn[1]] ;#BTN2
+set_property -dict {PACKAGE_PIN P3 IOSTANDARD LVCMOS33} [get_ports touch_btn[2]] ;#BTN3
+set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports touch_btn[3]] ;#BTN4
+set_property -dict {PACKAGE_PIN U1 IOSTANDARD LVCMOS33} [get_ports clock_btn] ;#BTN5
+set_property -dict {PACKAGE_PIN U5 IOSTANDARD LVCMOS33} [get_ports reset_btn] ;#BTN6
 
 #required if touch button used as manual clock source
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clock_btn_IBUF]
@@ -26,8 +26,8 @@ set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets reset_btn_IBUF]
 #set_property -dict {PACKAGE_PIN L15 IOSTANDARD LVCMOS33} [get_ports {uart_dataready}]
 
 #Ext serial
-set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN H18} [get_ports txd]
-set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN J20} [get_ports rxd]
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN H18} [get_ports txd] ;#GPIO5
+set_property -dict {IOSTANDARD LVCMOS33 PACKAGE_PIN J20} [get_ports rxd] ;#GPIO6
 
 #Digital Video
 set_property -dict {PACKAGE_PIN H22 IOSTANDARD LVCMOS33} [get_ports video_clk]
@@ -115,7 +115,7 @@ set_property -dict {PACKAGE_PIN T5 IOSTANDARD LVCMOS33} [get_ports {dip_sw[29]}]
 set_property -dict {PACKAGE_PIN R6 IOSTANDARD LVCMOS33} [get_ports {dip_sw[30]}]
 set_property -dict {PACKAGE_PIN R2 IOSTANDARD LVCMOS33} [get_ports {dip_sw[31]}]
 
-set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33} [get_ports {flash_a[0]}]
+set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33}  [get_ports {flash_a[0]}]
 set_property -dict {PACKAGE_PIN H9 IOSTANDARD LVCMOS33} [get_ports {flash_a[1]}]
 set_property -dict {PACKAGE_PIN H8 IOSTANDARD LVCMOS33} [get_ports {flash_a[2]}]
 set_property -dict {PACKAGE_PIN G9 IOSTANDARD LVCMOS33} [get_ports {flash_a[3]}]
@@ -156,12 +156,12 @@ set_property -dict {PACKAGE_PIN B2 IOSTANDARD LVCMOS33} [get_ports {flash_d[13]}
 set_property -dict {PACKAGE_PIN A3 IOSTANDARD LVCMOS33} [get_ports {flash_d[14]}]
 set_property -dict {PACKAGE_PIN A4 IOSTANDARD LVCMOS33} [get_ports {flash_d[15]}]
 
-set_property -dict {PACKAGE_PIN B1 IOSTANDARD LVCMOS33} [get_ports flash_byte_n]
-set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS33} [get_ports flash_ce_n]
-set_property -dict {PACKAGE_PIN A5 IOSTANDARD LVCMOS33} [get_ports flash_oe_n]
-set_property -dict {PACKAGE_PIN G6 IOSTANDARD LVCMOS33} [get_ports flash_rp_n]
-set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports flash_vpen]
-set_property -dict {PACKAGE_PIN B5 IOSTANDARD LVCMOS33} [get_ports flash_we_n]
+set_property -dict {PACKAGE_PIN B1 IOSTANDARD LVCMOS33}  [get_ports flash_byte_n]
+set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS33} [get_ports flash_ce_n  ]
+set_property -dict {PACKAGE_PIN A5 IOSTANDARD LVCMOS33}  [get_ports flash_oe_n  ]
+set_property -dict {PACKAGE_PIN G6 IOSTANDARD LVCMOS33} [get_ports flash_rp_n  ]
+set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports flash_vpen  ]
+set_property -dict {PACKAGE_PIN B5 IOSTANDARD LVCMOS33}  [get_ports flash_we_n  ]
 
 set_property -dict {PACKAGE_PIN T19 IOSTANDARD LVCMOS33} [get_ports {base_ram_addr[0]}]
 set_property -dict {PACKAGE_PIN V18 IOSTANDARD LVCMOS33} [get_ports {base_ram_addr[1]}]
@@ -286,39 +286,4 @@ set_property -dict {PACKAGE_PIN AD19 IOSTANDARD LVCMOS33} [get_ports ext_ram_we_
 set_property CFGBVS VCCO [current_design]
 set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
-
-
-create_clock -period 10.000 -name VIRTUAL_clk_out1_pll_example -waveform {0.000 5.000}
-
-
-set_input_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports {base_ram_data[*]}]
-set_input_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 5.000 [get_ports {base_ram_data[*]}]
-set_input_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports {ext_ram_data[*]}]
-set_input_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 5.000 [get_ports {ext_ram_data[*]}]
-set_input_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports rxd]
-set_input_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 5.000 [get_ports rxd]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports {base_ram_addr[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports {base_ram_addr[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports {base_ram_data[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports {base_ram_data[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports {ext_ram_addr[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports {ext_ram_addr[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports {ext_ram_be_n[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports {ext_ram_be_n[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports {ext_ram_data[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports {ext_ram_data[*]}]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports base_ram_ce_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports base_ram_ce_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports base_ram_oe_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports base_ram_oe_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports base_ram_we_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports base_ram_we_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports ext_ram_ce_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports ext_ram_ce_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports ext_ram_oe_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports ext_ram_oe_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports ext_ram_we_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports ext_ram_we_n]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -min -add_delay 0.000 [get_ports txd]
-set_output_delay -clock [get_clocks VIRTUAL_clk_out1_pll_example] -max -add_delay 3.000 [get_ports txd]
 

@@ -19,7 +19,7 @@ module ID(
 
     output wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
-    input wire [`BR_WD-1:0] br_bus 
+    output wire [`BR_WD-1:0] br_bus 
 );
 
     reg [`IC_TO_ID_WD-1:0] ic_to_id_bus_r;
@@ -58,11 +58,6 @@ module ID(
         //     ic_to_id_bus <= `IC_TO_ID_WD'b0;
         // end
         else if (stall[2]==`Stop && stall[3]==`NoStop) begin
-            ic_to_id_bus_r <= `IC_TO_ID_WD'b0;
-            flag <= 1'b0;
-            inst_sram_rdata_r <= 32'b0;
-        end
-        else if (stall[2]==`NoStop & br_bus[32]) begin
             ic_to_id_bus_r <= `IC_TO_ID_WD'b0;
             flag <= 1'b0;
             inst_sram_rdata_r <= 32'b0;
@@ -129,7 +124,6 @@ module ID(
     wire [11:0] alu_op;
     wire [7:0] hilo_op; 
     wire [7:0] mem_op;
-    wire [11:0] bru_op;
 
     wire data_ram_en;
     wire data_ram_wen;
@@ -140,7 +134,7 @@ module ID(
     wire [2:0] sel_rf_dst;
 
     wire [31:0] rf_rdata1, rf_rdata2, rdata1, rdata2;
-    // wire [31:0] bru_rdata1, bru_rdata2;
+    wire [31:0] bru_rdata1, bru_rdata2;
 
     regfile u_regfile(
     	.clk    (clk    ),
@@ -369,11 +363,6 @@ module ID(
         inst_lw, inst_sb, inst_sh, inst_sw
     };
 
-    assign bru_op = {
-        inst_beq, inst_bne, inst_bgez, inst_bgtz, inst_blez, inst_bltz,
-        inst_bltzal, inst_bgezal, inst_j, inst_jr, inst_jal, inst_jalr
-    };
-
     // load and store enable
     assign data_ram_en = inst_sw | inst_lw | inst_lb | inst_lbu | inst_lh | inst_lhu | inst_sb | inst_sh;
 
@@ -419,7 +408,6 @@ module ID(
     wire [31:0] data_ram_addr = rdata1 + {{16{inst[15]}},inst[15:0]};
 
     assign id_to_ex_bus = {
-        bru_op,         // 280:269
         data_ram_addr,  // 268:237
         inst_mul,       // 236
         mem_op,         // 235:228
@@ -440,35 +428,35 @@ module ID(
     };
 
 
-    // wire br_e;
-    // wire [31:0] br_addr;
-    // wire rs_eq_rt;
-    // wire rs_ge_z;
-    // wire rs_gt_z;
-    // wire rs_le_z;
-    // wire rs_lt_z;
-    // wire [31:0] pc_plus_4;
-    // assign pc_plus_4 = id_pc + 32'h4;
+    wire br_e;
+    wire [31:0] br_addr;
+    wire rs_eq_rt;
+    wire rs_ge_z;
+    wire rs_gt_z;
+    wire rs_le_z;
+    wire rs_lt_z;
+    wire [31:0] pc_plus_4;
+    assign pc_plus_4 = id_pc + 32'h4;
 
-    // assign bru_rdata1 = (dc_rf_we & ~|(dc_rf_waddr ^ rs))    ? dc_rf_wdata :
-    //                     (mem_rf_we & ~|(mem_rf_waddr ^ rs))  ? mem_rf_wdata :
-    //                     (wb_rf_we & ~|(wb_rf_waddr ^ rs))    ? wb_rf_wdata :
-    //                                                           rf_rdata1;
-    // assign bru_rdata2 = (dc_rf_we & ~|(dc_rf_waddr ^ rt))    ? dc_rf_wdata :
-    //                     (mem_rf_we & ~|(mem_rf_waddr ^ rt))  ? mem_rf_wdata :
-    //                     (wb_rf_we & ~|(wb_rf_waddr ^ rt))    ? wb_rf_wdata :
-    //                                                           rf_rdata2;
-    // assign stallreq_for_bru = ex_rf_we & (~|(ex_rf_waddr^rt) | ~|(ex_rf_waddr^rs)) 
-    //                         & (inst_beq | inst_bne | inst_bgez | inst_bgtz 
-    //                         | inst_blez | inst_bltz | inst_bltzal | inst_bgezal
-    //                         | inst_j | inst_jr | inst_jal | inst_jalr);
-    assign stallreq_for_bru = 1'b0;
+    assign bru_rdata1 = (dc_rf_we & ~|(dc_rf_waddr ^ rs))    ? dc_rf_wdata :
+                        (mem_rf_we & ~|(mem_rf_waddr ^ rs))  ? mem_rf_wdata :
+                        (wb_rf_we & ~|(wb_rf_waddr ^ rs))    ? wb_rf_wdata :
+                                                              rf_rdata1;
+    assign bru_rdata2 = (dc_rf_we & ~|(dc_rf_waddr ^ rt))    ? dc_rf_wdata :
+                        (mem_rf_we & ~|(mem_rf_waddr ^ rt))  ? mem_rf_wdata :
+                        (wb_rf_we & ~|(wb_rf_waddr ^ rt))    ? wb_rf_wdata :
+                                                              rf_rdata2;
+    assign stallreq_for_bru = ex_rf_we & (~|(ex_rf_waddr^rt) | ~|(ex_rf_waddr^rs)) 
+                            & (inst_beq | inst_bne | inst_bgez | inst_bgtz 
+                            | inst_blez | inst_bltz | inst_bltzal | inst_bgezal
+                            | inst_j | inst_jr | inst_jal | inst_jalr);
+    // assign stallreq_for_bru = 1'b0;
 
-    // assign rs_eq_rt = ~|(bru_rdata1 ^ bru_rdata2);
-    // assign rs_ge_z  = ~bru_rdata1[31];
-    // assign rs_gt_z  = ($signed(bru_rdata1) > 0);
-    // assign rs_le_z  = (bru_rdata1[31] | (~|bru_rdata1));
-    // assign rs_lt_z  = (bru_rdata1[31]);
+    assign rs_eq_rt = ~|(bru_rdata1 ^ bru_rdata2);
+    assign rs_ge_z  = ~bru_rdata1[31];
+    assign rs_gt_z  = ($signed(bru_rdata1) > 0);
+    assign rs_le_z  = (bru_rdata1[31] | (~|bru_rdata1));
+    assign rs_lt_z  = (bru_rdata1[31]);
 
     // assign rs_eq_rt = (rdata1 == rdata2);
     // assign rs_ge_z  = ~rdata1[31];
@@ -476,35 +464,35 @@ module ID(
     // assign rs_le_z  = (rdata1[31] == 1'b1 || rdata1 == 32'b0);
     // assign rs_lt_z  = (rdata1[31]);
 
-    // assign br_e = inst_beq & rs_eq_rt
-    //             | inst_bne & ~rs_eq_rt
-    //             | inst_bgez & rs_ge_z
-    //             | inst_bgtz & rs_gt_z
-    //             | inst_blez & rs_le_z
-    //             | inst_bltz & rs_lt_z
-    //             | inst_bltzal & rs_lt_z
-    //             | inst_bgezal & rs_ge_z
-    //             | inst_j
-    //             | inst_jr
-    //             | inst_jal
-    //             | inst_jalr;
-    // assign br_addr = inst_beq   ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) 
-    //                : inst_bne   ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
-    //                : inst_bgez  ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
-    //                : inst_bgtz  ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
-    //                : inst_blez  ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
-    //                : inst_bltz  ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
-    //                : inst_bltzal? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
-    //                : inst_bgezal? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
-    //                : inst_j     ? {id_pc[31:28],instr_index,2'b0}
-    //                : inst_jr    ? bru_rdata1 
-    //                : inst_jal   ? {id_pc[31:28],instr_index,2'b0} 
-    //                : inst_jalr  ? bru_rdata1 : 32'b0;
+    assign br_e = inst_beq & rs_eq_rt
+                | inst_bne & ~rs_eq_rt
+                | inst_bgez & rs_ge_z
+                | inst_bgtz & rs_gt_z
+                | inst_blez & rs_le_z
+                | inst_bltz & rs_lt_z
+                | inst_bltzal & rs_lt_z
+                | inst_bgezal & rs_ge_z
+                | inst_j
+                | inst_jr
+                | inst_jal
+                | inst_jalr;
+    assign br_addr = inst_beq   ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) 
+                   : inst_bne   ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
+                   : inst_bgez  ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
+                   : inst_bgtz  ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
+                   : inst_blez  ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
+                   : inst_bltz  ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
+                   : inst_bltzal? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
+                   : inst_bgezal? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0})
+                   : inst_j     ? {id_pc[31:28],instr_index,2'b0}
+                   : inst_jr    ? bru_rdata1 
+                   : inst_jal   ? {id_pc[31:28],instr_index,2'b0} 
+                   : inst_jalr  ? bru_rdata1 : 32'b0;
 
-    // assign br_bus = {
-    //     br_e,
-    //     br_addr
-    // };
+    assign br_bus = {
+        br_e,
+        br_addr
+    };
     
 
 

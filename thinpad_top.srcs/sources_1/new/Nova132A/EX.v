@@ -8,8 +8,6 @@ module EX(
     // input wire flush,
     input wire [`StallBus-1:0] stall,
     output wire stallreq_for_ex,
-    output wire [`BR_WD-1:0] br_bus,
-    input wire [`BR_WD-1:0] bp_to_ex_bus,
 
     input wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
@@ -56,11 +54,9 @@ module EX(
     wire [31:0] hi_i, lo_i;
     wire [7:0] hilo_op;
     wire [7:0] mem_op;
-    wire [11:0] bru_op;
     wire inst_mul;
 
     assign {
-        bru_op,         // 280:269
         data_ram_addr,  // 268:237
         inst_mul,       // 236
         mem_op,         // 235:228
@@ -297,18 +293,6 @@ module EX(
 
     assign stallreq_for_ex = stallreq_for_div | stallreq_for_mul;
 
-// bru
-
-    bru u_bru(
-        .pc             (ex_pc       ),
-        .inst           (inst        ),
-        .rdata1         (rf_rdata1   ),
-        .rdata2         (rf_rdata2   ),
-        .bru_op         (bru_op      ),
-        .br_bus         (br_bus      ),
-        .bp_to_ex_bus   (bp_to_ex_bus)
-    );
-    
 
 // output
 

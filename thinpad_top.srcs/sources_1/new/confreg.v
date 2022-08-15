@@ -82,7 +82,7 @@ always @(posedge clk) begin //接收到缓冲区ext_uart_buffer
     end
 end
 
-async_receiver #(.ClkFrequency(100000000),.Baud(9600)) //接收模块 9600无检验位
+async_receiver #(.ClkFrequency(110000000),.Baud(9600)) //接收模块 9600无检验位
     ext_uart_r(
         .clk(clk),                          //外部时钟信号
         .RxD(rxd),                          //外部串行信号输入
@@ -91,7 +91,7 @@ async_receiver #(.ClkFrequency(100000000),.Baud(9600)) //接收模块 9600无检
         .RxD_data(ext_uart_rx)              //接收到的一字节数据
     );
 
-async_transmitter #(.ClkFrequency(100000000),.Baud(9600)) //发送模块 9600无检验位
+async_transmitter #(.ClkFrequency(110000000),.Baud(9600)) //发送模块 9600无检验位
     ext_uart_t(
         .clk(clk),                          //外部时钟信号
         .TxD(txd),                          //串行信号输出

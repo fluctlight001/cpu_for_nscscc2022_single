@@ -57,14 +57,14 @@ module way(
     always @ (posedge clk) begin
         bank_sel_r <= bank_sel;
     end
-    assign dout = bank_sel_r[7] ? bank_dout[7] 
-                : bank_sel_r[6] ? bank_dout[6] 
-                : bank_sel_r[5] ? bank_dout[5] 
-                : bank_sel_r[4] ? bank_dout[4] 
-                : bank_sel_r[3] ? bank_dout[3] 
-                : bank_sel_r[2] ? bank_dout[2] 
-                : bank_sel_r[1] ? bank_dout[1] 
-                : bank_sel_r[0] ? bank_dout[0] : 32'b0; 
+    assign dout = {32{bank_sel_r[7]}} & bank_dout[7] 
+                | {32{bank_sel_r[6]}} & bank_dout[6] 
+                | {32{bank_sel_r[5]}} & bank_dout[5] 
+                | {32{bank_sel_r[4]}} & bank_dout[4] 
+                | {32{bank_sel_r[3]}} & bank_dout[3] 
+                | {32{bank_sel_r[2]}} & bank_dout[2] 
+                | {32{bank_sel_r[1]}} & bank_dout[1] 
+                | {32{bank_sel_r[0]}} & bank_dout[0]; 
 
 
     

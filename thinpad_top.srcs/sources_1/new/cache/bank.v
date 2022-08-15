@@ -2,7 +2,7 @@ module bank(
     input wire clk,
     input wire en,
     input wire [3:0] wen,
-    input wire [6:0] index,
+    input wire [5:0] index,
     input wire [31:0] din,
     output wire [31:0] dout
 );
