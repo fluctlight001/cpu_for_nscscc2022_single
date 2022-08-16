@@ -110,10 +110,10 @@ module sram_ctrl(
     assign ext_ram_oe_n = ext_ram_oe_n_r;
     assign ext_ram_we_n = ext_ram_we_n_r;
 
-    //in
-    assign cpu_inst_rdata = base_ram_data;
-    assign inst_sram_rdata = base_ram_data;
-    assign data_sram_rdata = ext_ram_data;
+    // //in
+    // assign cpu_inst_rdata = base_ram_data;
+    // assign inst_sram_rdata = base_ram_data;
+    // assign data_sram_rdata = ext_ram_data;
 
     //out
     always @ (posedge clk) begin
@@ -340,17 +340,22 @@ module sram_ctrl(
                     // data_end <= 1'b0;
                 end
                 stage_d[1]:begin
-                    stage_d <= 1'b0;
+                    stage_d <= 1'b1;
                     data_end <= 1'b0;
                 end
+                // stage_d[2]:begin
+                //     stage_d <= 1'b1;
+                //     data_end <= 1'b0;
+                //     data_sram_rdata <= ext_ram_data;
+                // end
                 default:begin
                     stage_d <= 1'b1;
-                    ext_ram_addr_r <= 20'b0;
-                    ext_ram_be_n_r <= 4'b0;
-                    ext_ram_ce_n_r <= 1'b1;
-                    ext_ram_oe_n_r <= 1'b1;
+                    // ext_ram_addr_r <= 20'b0;
+                    // ext_ram_be_n_r <= 4'b0;
+                    // ext_ram_ce_n_r <= 1'b1;
+                    // ext_ram_oe_n_r <= 1'b1;
                     ext_ram_we_n_r <= 1'b1;
-                    ext_ram_data_r <= 32'b0;
+                    // ext_ram_data_r <= 32'b0;
                     data_end <= 1'b0;
                 end
             endcase 
