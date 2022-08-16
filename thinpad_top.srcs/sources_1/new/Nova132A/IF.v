@@ -8,6 +8,7 @@ module IF(
     // input wire [31:0] new_pc,
 
     input wire [`BR_WD-1:0] br_bus,
+    input wire [`BR_WD-1:0] bp_bus,
 
     output wire [`IF_TO_IC_WD-1:0] if_to_ic_bus,
 
@@ -21,16 +22,23 @@ module IF(
     wire [31:0] next_pc;
     wire br_e;
     wire [31:0] br_addr;
+    wire bp_e;
+    wire [31:0] bp_addr;
 
     assign {
         br_e,
         br_addr
     } = br_bus;
 
+    assign {
+        bp_e, bp_addr
+    } = bp_bus;
+
 
     always @ (posedge clk) begin
         if (rst) begin
             pc_reg <= 32'h7fff_fffc;
+            // pc_reg <= 32'hbfbf_fffc;
             // pc_reg <= 32'h8000_3008;
             // pc_reg <= 32'h8000_3038;
         end
@@ -49,8 +57,9 @@ module IF(
     end
 
 
-    assign next_pc = br_e ? br_addr 
-                   : pc_reg + 32'h4;
+    assign next_pc =  br_e ? br_addr 
+                    : bp_e ? bp_addr
+                    : pc_reg + 32'h4;
 
     
     assign inst_sram_en = ce_reg;
