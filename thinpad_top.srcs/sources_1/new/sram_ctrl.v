@@ -306,7 +306,7 @@ module sram_ctrl(
     // end
 
     reg data_end;
-    assign stallreq = data_sram_en & ~data_end;
+    assign stallreq = data_sram_en & ~(|data_sram_wen) & ~data_end | data_sram_en & (|data_sram_wen) & ~stage_d[0];
     assign data_sram_rdata = ext_ram_data;
     always @ (posedge clk) begin
         if (!resetn) begin
