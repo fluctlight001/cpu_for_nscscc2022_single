@@ -17,6 +17,7 @@ loop:
     ori   $t1, $t2, 0x0   # t1 = t2
     sw    $t1, 0($a0)
     addiu $a0, $a0, 4     # a0 += 4
+    addiu $zero, $zero, 0
     addiu $v0, $v0, 1     # v0 += 1
 
     bne   $v0, $v1, loop
