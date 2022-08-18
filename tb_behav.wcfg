@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1051924833fs"></ZoomStartTime>
-      <ZoomEndTime time="1052033034fs"></ZoomEndTime>
-      <Cursor1Time time="1051960000fs"></Cursor1Time>
+      <ZoomStartTime time="2084305fs"></ZoomStartTime>
+      <ZoomEndTime time="2196598fs"></ZoomEndTime>
+      <Cursor1Time time="2137395fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="206"></NameColumnWidth>
-      <ValueColumnWidth column_width="181"></ValueColumnWidth>
+      <ValueColumnWidth column_width="177"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="46" />
+   <WVObjectSize size="28" />
    <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/pc_reg" type="array">
       <obj_property name="ElementShortName">pc_reg[31:0]</obj_property>
       <obj_property name="ObjectShortName">pc_reg[31:0]</obj_property>
@@ -120,88 +120,16 @@
       <obj_property name="ElementShortName">rxd</obj_property>
       <obj_property name="ObjectShortName">rxd</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/u_sram_ctrl/ext_ram_data_r" type="array">
-      <obj_property name="ElementShortName">ext_ram_data_r[31:0]</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_data_r[31:0]</obj_property>
+   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_ID/u_regfile/reg_array" type="array">
+      <obj_property name="ElementShortName">reg_array[31:0][31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_array[31:0][31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/u_sram_ctrl/ext_ram_addr_r" type="array">
-      <obj_property name="ElementShortName">ext_ram_addr_r[19:0]</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_addr_r[19:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_sram_ctrl/ext_ram_be_n_r" type="array">
-      <obj_property name="ElementShortName">ext_ram_be_n_r[3:0]</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_be_n_r[3:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_sram_ctrl/ext_ram_ce_n_r" type="logic">
-      <obj_property name="ElementShortName">ext_ram_ce_n_r</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_ce_n_r</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_sram_ctrl/ext_ram_oe_n_r" type="logic">
-      <obj_property name="ElementShortName">ext_ram_oe_n_r</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_oe_n_r</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_sram_ctrl/ext_ram_we_n_r" type="logic">
-      <obj_property name="ElementShortName">ext_ram_we_n_r</obj_property>
-      <obj_property name="ObjectShortName">ext_ram_we_n_r</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_confreg/ext_uart_tx" type="array">
-      <obj_property name="ElementShortName">ext_uart_tx[7:0]</obj_property>
-      <obj_property name="ObjectShortName">ext_uart_tx[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/pc_reg" type="array">
-      <obj_property name="ElementShortName">pc_reg[31:0]</obj_property>
-      <obj_property name="ObjectShortName">pc_reg[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/next_pc" type="array">
-      <obj_property name="ElementShortName">next_pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">next_pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/br_e" type="logic">
+   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/br_e" type="logic">
       <obj_property name="ElementShortName">br_e</obj_property>
       <obj_property name="ObjectShortName">br_e</obj_property>
    </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/br_addr" type="array">
-      <obj_property name="ElementShortName">br_addr[31:0]</obj_property>
-      <obj_property name="ObjectShortName">br_addr[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/bp_e" type="logic">
-      <obj_property name="ElementShortName">bp_e</obj_property>
-      <obj_property name="ObjectShortName">bp_e</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_ID/id_pc" type="array">
-      <obj_property name="ElementShortName">id_pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">id_pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_ID/inst" type="array">
-      <obj_property name="ElementShortName">inst[31:0]</obj_property>
-      <obj_property name="ObjectShortName">inst[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/ex_pc" type="array">
-      <obj_property name="ElementShortName">ex_pc[31:0]</obj_property>
-      <obj_property name="ObjectShortName">ex_pc[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/inst" type="array">
-      <obj_property name="ElementShortName">inst[31:0]</obj_property>
-      <obj_property name="ObjectShortName">inst[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/bru_op" type="array">
-      <obj_property name="ElementShortName">bru_op[11:0]</obj_property>
-      <obj_property name="ObjectShortName">bru_op[11:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/br_bus" type="array">
-      <obj_property name="ElementShortName">br_bus[32:0]</obj_property>
-      <obj_property name="ObjectShortName">br_bus[32:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/jump_err" type="logic">
-      <obj_property name="ElementShortName">jump_err</obj_property>
-      <obj_property name="ObjectShortName">jump_err</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/nojump_err" type="logic">
-      <obj_property name="ElementShortName">nojump_err</obj_property>
-      <obj_property name="ObjectShortName">nojump_err</obj_property>
-   </wvobject>
-   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/target_err" type="logic">
-      <obj_property name="ElementShortName">target_err</obj_property>
-      <obj_property name="ObjectShortName">target_err</obj_property>
+   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/pc" type="array">
+      <obj_property name="ElementShortName">pc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc[31:0]</obj_property>
    </wvobject>
 </wave_config>

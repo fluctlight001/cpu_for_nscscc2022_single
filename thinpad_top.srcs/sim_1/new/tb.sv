@@ -49,7 +49,7 @@ wire [4:0] debug_wb_rf_wnum;
 wire [31:0] debug_wb_rf_wdata;
 
 //Windows需要注意路径分隔符的转义，例如"D:\\foo\\bar.bin"
-parameter BASE_RAM_INIT_FILE = "D:\\Project\\lab\\nscscc2022_single_v1\\kernel\\kernel.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
+parameter BASE_RAM_INIT_FILE = "D:\\Project\\lab\\nscscc2022_single_v2\\fpga_template_utf8_v1.00\\asm\\user-sample.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
 // parameter BASE_RAM_INIT_FILE = "D:\\Project\\lab\\nscscc2022_single_v1\\lab_bin\\lab2.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
 parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
 parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash初始化文件，请修改为实际的绝对路径
