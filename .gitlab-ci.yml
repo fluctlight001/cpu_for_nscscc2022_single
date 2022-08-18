@@ -16,6 +16,7 @@ bitstream:
     - str="thinpad_top.srcs"
     - diff=""
     - echo ${CI_COMMIT_BEFORE_SHA}
+    - git config --global --add safe.directory $(pwd)
     - >
       if [ "${CI_COMMIT_BEFORE_SHA}" == "0000000000000000000000000000000000000000" ]
         then vivado -mode tcl -source .ci-scripts/bits.tcl thinpad_top.xpr
