@@ -49,9 +49,6 @@ part2:
     ori $t5, $zero, 0x1   # flag
     
 endloop2:
-    beq $t5, $zero, part3
-    ori   $zero, $zero, 0 # nop
-
 
     
 end:
