@@ -29,6 +29,7 @@ loop2:
     ori $t5, $zero, 0x0   # flag
 
     beq   $t0, $t6, endloop2
+    sw  $t0,0($a2)
     ori $t5, $zero, 0x0   # flag
     ori   $zero, $zero, 0 # nop
 
