@@ -54,7 +54,7 @@ endloop2:
     sw $t6, 0($a2)
     
 part3:
-    beq $zero,$zero,loop
+    
     addiu $a3, $a3, 0x4
     
 end:
