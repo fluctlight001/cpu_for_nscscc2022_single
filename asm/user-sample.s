@@ -29,9 +29,7 @@ loop1:
 
     lw $v0, 0($a0)
     
-
     beq $a0, $a1, end
-    ori   $zero, $zero, 0 # nop
     addiu $a0, $a0, 4
     sltu $t2, $s0, $v0
     beq $t2, $zero, loop2
@@ -49,48 +47,47 @@ loop2:
     bne $v0, $t2, part1
     ori   $zero, $zero, 0 # nop
     sw $t0, 0($a2)
-    addiu $a2, $a2, 4
+    
     beq $zero, $zero, loop1
-    ori $zero,$zero, 0
+    addiu $a2, $a2, 4
 
 part1:
     mul $t2, $t1, $t1
     bne $v0, $t2, part2
     ori   $zero, $zero, 0 # nop
     sw $t1, 0($a2)
-    addiu $a2, $a2, 4
+    
     beq $zero, $zero, loop1
-    ori $zero,$zero, 0
+    addiu $a2, $a2, 4
 part2:
     mul $t2, $t3, $t3
     bne $v0, $t2, part3
     ori   $zero, $zero, 0 # nop
     sw $t3, 0($a2)
-    addiu $a2, $a2, 4
+    
     beq $zero, $zero, loop1
-    ori $zero,$zero, 0
+    addiu $a2, $a2, 4
 part3:
     addu $t2, $t0, $t7
     bne $t2, $t1, part4
     ori   $zero, $zero, 0 # nop
     sw $t0, 0($a2)
-    addiu $a2, $a2, 4
     beq $zero, $zero, loop1
-    ori $zero,$zero, 0
+    addiu $a2, $a2, 4
 part4:
     mul $t2, $t3, $t3
     sltu $t2, $t2, $v0
     beq $t2, $zero, part5
     ori $zero,$zero, 0
     xor $t0, $t0, $t0
-    addu $t0, $t0, $t3
+    
     beq $zero, $zero, loop2
-    ori $zero,$zero, 0
+    addu $t0, $t0, $t3
 part5:
     xor $t1, $t1, $t1
-    addu $t1, $t1, $t3
+    
     beq $zero, $zero, loop2
-    ori $zero,$zero, 0
+    addu $t1, $t1, $t3
 
 
 end:
