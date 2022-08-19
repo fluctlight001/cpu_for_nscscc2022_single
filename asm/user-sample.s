@@ -62,14 +62,14 @@ part4:
     beq $t2, $zero, part5
     ori $zero,$zero, 0
     xor $t0, $t0, $t0
-    
-    beq $zero, $zero, loop2
     addu $t0, $t0, $t3
+    beq $zero, $zero, loop2
+    addiu $t0, $t0, 0x1
 part5:
     xor $t1, $t1, $t1
-    
-    beq $zero, $zero, loop2
     addu $t1, $t1, $t3
+    beq $zero, $zero, loop2
+    sub $t1, $t1, 0x1
 
 
 end:
