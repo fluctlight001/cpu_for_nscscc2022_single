@@ -34,7 +34,7 @@ loop1 :
     ori   $zero, $zero, 0 # nop
     sw $t0, 0($a2)
     addiu $a0, $a0, 4
-    beq $zero,$zero, part2
+    beq $zero,$zero, loop1_end
     ori $t5, $zero, 0x1   # flag
 part1:
     sltu $t2, $v0, $t1
@@ -43,12 +43,15 @@ part1:
     subu $t0, $t0, $t7
     sw $t0, 0($a2)
     addiu $a0, $a0, 4
+    beq $zero,$zero, loop1_end
     ori $t5, $zero, 0x1   # flag
 part2:
-    beq $t5, $t7, loop
-    ori $t5, $zero, 0x0   # flag
-    sw $t6, 0($a2)
+    bne $t0, $t6, loop1
+    addiu $t0, #t0, 1
 
+loop1_end:
+    beq $t5, $t7, loop
+    sw $t6, 0($a2)
 
 end:
     jr    $ra
