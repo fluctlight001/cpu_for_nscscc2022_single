@@ -21,7 +21,7 @@ __start:
     lui $a0, 0x8040       # a0 = 0x80400000
     lui $a1, 0x8050
     lui $a2, 0x8050
-    lui $a3, 0x0001
+    lui $a3, 0x0010
 
 loop1:
     ori $t0, $zero, 0
