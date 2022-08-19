@@ -6,7 +6,7 @@
 __start:
 .text
     lui $s0, 0xfffe
-    ori $s0, $zero, 0x0001
+    ori $s0, $s0, 0x0001
     ori $t0, $zero, 0x1   # t0 = l
     ori $t1, $zero, 0x1   # t1 = r
     
