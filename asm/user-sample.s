@@ -34,6 +34,7 @@ loop1 :
     ori   $zero, $zero, 0 # nop
     sw $t0, 0($a2)
     addiu $a0, $a0, 4
+    beq $zero,$zero, part2
     ori $t5, $zero, 0x1   # flag
 part1:
     sltu $t2, $v0, $t1

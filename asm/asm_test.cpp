@@ -2,7 +2,7 @@
 int main (){
     long int n;
     // freopen("testout","w",stdout);
-    while (~scanf("%ld",&n)){
+    while (~scanf("%lx",&n)){
         int flag = 0;
         for(long int i=1;i<=65535;i=i*2){
             if (i*i>n){
