@@ -1,0 +1,1 @@
+mips-mti-elf-objdump -b binary -m mips -D user-sample.bin > user-sample.asm

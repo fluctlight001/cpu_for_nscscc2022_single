@@ -19,6 +19,7 @@ all: $(BINS)
 
 %.elf: %.o
 	$(LD) $(LDFLAGS) -Ttext 0x80100000 -o $@ $^
+	$(OBJDUMP) -alD $@ > test.s
 
 %.o: %.s
 	$(CC) $(CFLAGS) -x assembler-with-cpp -c -o $@ $^
