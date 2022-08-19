@@ -19,13 +19,14 @@ __start:
     lui $a2, 0x8050
 
 loop:
+    ori $t0, $zero, 0x1   # t0 = 1
     lw      $v0, 0($a0)
     addiu   $a0, $a0, 0x4
     beq     $a0,$a1, end
 loop2:
     ori $t2, $zero, 0
     ori $t5, $zero, 0x0   # flag
-    
+
     beq   $t0, $t6, endloop2
     ori   $zero, $zero, 0 # nop
 
