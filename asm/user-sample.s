@@ -24,6 +24,9 @@ loop:
     ori $t0, $zero, 0x1   # t0 = 1
     ori $t5, $zero, 0x0   # flag
     lw      $v0, 0($a0)
+    addiu $a0, $a0, 4
+    beq $a0, $a1, end
+    ori $zero, $zero, 0
     
 loop1 :
     mul $t1, $t0, $t0
@@ -41,9 +44,11 @@ part1:
     addiu $a0, $a0, 4
     ori $t5, $zero, 0x1   # flag
 part2:
-    beq $t5, $t7, end
+    beq $t5, $t7, loop
     ori $t5, $zero, 0x0   # flag
     sw $t6, 0($a2)
+
+
 end:
     jr    $ra
     ori   $zero, $zero, 0 # nop
