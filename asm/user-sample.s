@@ -23,7 +23,7 @@ __start:
     sw $v1, 0($a0)
     addiu $a0, $a0, 4
     lui $a0, 0x8040       # a0 = 0x80400000
-    lui $a3,0x0004
+    ori $a3, $a3,0x0004
 
 loop:
 ori   $zero, $zero, 0 # nop
