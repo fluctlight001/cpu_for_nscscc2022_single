@@ -60,8 +60,8 @@ part1:
     beq $zero, $zero, loop1
     addiu $a2, $a2, 4
 part2:
-    mul $t2, $t3, $t3
-    bne $v0, $t2, part3
+    mul $t8, $t3, $t3
+    bne $v0, $t8, part3
     ori   $zero, $zero, 0 # nop
     sw $t3, 0($a2)
     
@@ -75,8 +75,7 @@ part3:
     beq $zero, $zero, loop1
     addiu $a2, $a2, 4
 part4:
-    mul $t2, $t3, $t3
-    sltu $t2, $t2, $v0
+    sltu $t2, $t8, $v0
     beq $t2, $zero, part5
     ori $zero,$zero, 0
     xor $t0, $t0, $t0
