@@ -24,6 +24,8 @@ loop:
     beq     $a0,$a1, end
 loop2:
     ori $t2, $zero, 0
+    ori $t5, $zero, 0x0   # flag
+    
     beq   $t0, $t6, endloop2
     ori   $zero, $zero, 0 # nop
 
