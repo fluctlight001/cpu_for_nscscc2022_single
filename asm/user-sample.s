@@ -9,7 +9,7 @@ __start:
     ori $t1, $zero, 0x1   # t1 = 1
     ori $t4, $zero, 0x0   
     ori $t5, $zero, 0x0   # flag
-    ori $t6, $zero, 0xffff # 65535
+    ori $t6, $zero, 0xfffa # 65535
     ori $t7, $zero, 0x1   # 0x1
     ori $v0, $zero, 0x0
 
@@ -60,6 +60,7 @@ endloop2:
     
 part3:
     addiu $t4, $t4 ,1
+    sw $t6, 0($a2)
 
     bne $t4,$a3,end
     ori   $zero, $zero, 0 # nop
