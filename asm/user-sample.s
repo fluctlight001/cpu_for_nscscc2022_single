@@ -50,8 +50,12 @@ part2:
     addiu $t0, $t0, 1
 
 loop1_end:
-    beq $t5, $t7, loop
+    bne $t5, $zero, part3
+    ori $t5, $zero, 0x0   # flag
     sw $t6, 0($a2)
+part3:
+    beq $zero, $zero, loop
+    ori   $zero, $zero, 0 # nop
 
 end:
     jr    $ra
