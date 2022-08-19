@@ -17,6 +17,7 @@ __start:
     lui $a0, 0x8040       # a0 = 0x80400000
     lui $a1, 0x8050
     lui $a2, 0x8050
+    lui $a3, 0x0001
 
 loop:
     ori $t0, $zero, 0x1   # t0 = 1
@@ -60,7 +61,7 @@ part3:
     addiu $t4, $t4 ,1
 
     bne $t4,$a3,end
-    addiu $a3, $a3, 0x4
+    ori   $zero, $zero, 0 # nop
     
 end:
     jr    $ra
