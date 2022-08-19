@@ -23,11 +23,26 @@ __start:
 loop:
     ori $t0, $zero, 0x1   # t0 = 1
     lw      $v0, 0($a0)
-    addiu   $a0, $a0, 0x4
-    sw $t3, 0($a2)
-    sw $t3, 4($a2)
-
     
+loop1 :
+    mul $t1, $t0, $t0
+    bne $t1, $v0, part1
+    ori   $zero, $zero, 0 # nop
+    sw $t0, 0($a0)
+    addiu $a0, $a0, 4
+    ori $t5, $zero, 0x1   # flag
+part1:
+    sltu $t2, $v0, $t1
+    bne $zero, $t2, part2
+    ori   $zero, $zero, 0 # nop
+    sub $t0, $t0, 1
+    sw $t0, 0($a0)
+    addiu $a0, $a0, 4
+    ori $t5, $zero, 0x1   # flag
+part2:
+    beq $t5, $t7, end
+    ori $t5, $zero, 0x1   # flag
+    sw $t6, 0($a0)
 end:
     jr    $ra
     ori   $zero, $zero, 0 # nop
