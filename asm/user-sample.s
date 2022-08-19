@@ -52,10 +52,7 @@ endloop2:
     beq $t5, $zero, part3
     ori   $zero, $zero, 0 # nop
 
-    beq $zero, $zero, loop
-    addiu $a3, $a3, 0x4
-part3:
-    sw $t6, 0($a2)
+
     
 end:
     jr    $ra
