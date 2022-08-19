@@ -7,6 +7,7 @@ __start:
 .text
     ori $t0, $zero, 0x1   # t0 = 1
     ori $t1, $zero, 0x1   # t1 = 1
+    ori $t3, $zero, 0xdead
     ori $t4, $zero, 0x0   
     ori $t5, $zero, 0x0   # flag
     ori $t6, $zero, 0xffff # 65535
@@ -23,13 +24,14 @@ loop:
     ori $t0, $zero, 0x1   # t0 = 1
     lw      $v0, 0($a0)
     addiu   $a0, $a0, 0x4
+    sw  $t3,0($a2)
 
 loop2:
     ori $t2, $zero, 0
     ori $t5, $zero, 0x0   # flag
 
     beq   $t0, $t6, endloop2
-    sw  $t0,0($a2)
+    sw  $t3,0($a2)
     ori $t5, $zero, 0x0   # flag
     ori   $zero, $zero, 0 # nop
 
