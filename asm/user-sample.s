@@ -17,6 +17,41 @@ __start:
     lui $a1, 0x8050
     lui $a2, 0x8050
 
+loop:
+    lw      $v0, 0($a0)
+    addiu   $a0, $a0, 0x4
+    beq     $a0,$a1, end
+loop2:
+    beq   $t0, $t6, endloop2
+    ori   $zero, $zero, 0 # nop
+
+    mul   $t1, $t0, $t0
+
+    beq   $t0, $v0, part1
+    ori   $zero, $zero, 0 # nop
+
+    sltu  $t2, $v0, $t1
+    beq   $t2, $t7, part2
+    ori   $zero, $zero, 0 # nop
+    beq   $zero,$zero,loop2
+    addiu $t0, $t0, 0x1
+part1:    
+    sw  $t0,0($a2)
+    beq $zero, $zero ,endloop2
+    ori $t5, $zero, 0x1   # flag
+part2:
+    sub $t0, $t0, 0x1
+    sw  $t0,0($a2)
+    beq $zero, $zero ,endloop2
+    ori $t5, $zero, 0x1   # flag
+    
+endloop2:
+    beq $t5, $zero, part3
+    ori   $zero, $zero, 0 # nop
+
+    
+part3:
+    sw $t6, 0($a2)
     
 end:
     jr    $ra
