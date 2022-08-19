@@ -17,21 +17,13 @@ __start:
     lui $a0, 0x8040       # a0 = 0x80400000
     lui $a1, 0x8050
     lui $a2, 0x8050
-    sw $v1, 0($a0)
-    addiu $a0, $a0, 4
-    addiu $v1, $v1, 1
-    sw $v1, 0($a0)
-    addiu $a0, $a0, 4
-    lui $a0, 0x8040       # a0 = 0x80400000
-    ori $a3, $zero,0x0004
 
 loop:
-ori   $zero, $zero, 0 # nop
-ori   $zero, $zero, 0 # nop
     lw      $v0, 0($a0)
     addiu   $a0, $a0, 0x4
     beq     $a0,$a1, end
 loop2:
+    ori $t2, $zero, 0
     beq   $t0, $t6, endloop2
     ori   $zero, $zero, 0 # nop
 
