@@ -4,11 +4,15 @@ int main (){
     // freopen("testout","w",stdout);
     while (~scanf("%ld",&n)){
         int flag = 0;
-        for(long int i=1;i<=65535;i++){
+        for(long int i=1;i<=65535;i=i*2){
             if (i*i>n){
-                printf("%ld\n",i-1);
-                flag = 1;
-                break;
+                for(int j=i/2,j<=i;j++){
+                    if (j*j>n){
+                        printf("%ld\n",j-1);
+                        flag = 1;
+                        break;
+                    }
+                }
             }
             else if (i*i==n){
                 printf("%ld\n",i);

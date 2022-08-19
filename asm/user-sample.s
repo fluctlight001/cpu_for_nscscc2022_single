@@ -59,7 +59,7 @@ endloop2:
 part3:
     addiu $t4, $t4 ,1
 
-    bne $t4,$a3,loop
+    bne $t4,$a3,end
     addiu $a3, $a3, 0x4
     
 end:
