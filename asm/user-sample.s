@@ -5,9 +5,12 @@
 
 __start:
 .text
-    ori $t0, $zero, 0x1   # t0 = 1
-    ori $t1, $zero, 0x1   # t1 = 1
-    ori $t3, $zero, 0xdead
+    lui $s0, 0xfffe
+    ori $s0, $zero, 0x0001
+    ori $t0, $zero, 0x1   # t0 = l
+    ori $t1, $zero, 0x1   # t1 = r
+    
+    ori $t3, $zero, 0xdead # t3 = m
     ori $t4, $zero, 0x0   
     ori $t5, $zero, 0x0   # flag
     ori $t6, $zero, 0xffff # 65535
@@ -20,42 +23,69 @@ __start:
     lui $a2, 0x8050
     lui $a3, 0x0001
 
-loop:
-    ori $t0, $zero, 0x1   # t0 = 1
-    ori $t5, $zero, 0x0   # flag
-    lw      $v0, 0($a0)
+loop1:
+    ori $t0, $zero, 0
+    ori $t1, $zero, 0xffff
+    lw $v0, 0($a0)
     addiu $a0, $a0, 4
     beq $a0, $a1, end
-    ori $zero, $zero, 0
-    
-loop1 :
-    mul $t1, $t0, $t0
-    bne $t1, $v0, part1
-    ori   $zero, $zero, 0 # nop
-    sw $t0, 0($a2)
-    addiu $a0, $a0, 4
-    beq $zero,$zero, loop1_end
-    ori $t5, $zero, 0x1   # flag
-part1:
-    sltu $t2, $v0, $t1
-    bne $zero, $t2, part2
-    ori   $zero, $zero, 0 # nop
-    subu $t0, $t0, $t7
-    sw $t0, 0($a2)
-    addiu $a0, $a0, 4
-    beq $zero,$zero, loop1_end
-    ori $t5, $zero, 0x1   # flag
-part2:
-    bne $t0, $t6, loop1
-    addiu $t0, $t0, 1
-
-loop1_end:
-    bne $t5, $zero, part3
-    ori $t5, $zero, 0x0   # flag
+    ori, $zero, $zero, 0
+    sltu $t2, $s0, $v0
+    beq $t2, $zero, loop2
+    ori, $zero, $zero, 0
     sw $t6, 0($a2)
+    addiu $a2, $a2, 4
+    beq $zero, $zero, loop1
+    ori, $zero, $zero, 0
+loop2:
+    addu $t3, $t0, $t1
+    srl $t3, $t3, 1
+    mul $t2, $t0, $t0
+    bne $v0, $t2, part1
+    ori, $zero, $zero, 0
+    sw $t0, 0($a2)
+    addiu $a2, $a2, 4
+    beq $zero, $zero, loop1
+    ori $zero,$zero, 0
+part1:
+    mul $t2, $t1, $t1
+    bne $v0, $t2, part2
+    ori, $zero, $zero, 0
+    sw $t1, 0($a2)
+    addiu $a2, $a2, 4
+    beq $zero, $zero, loop1
+    ori $zero,$zero, 0
+part2:
+    mul $t2, $t3, $t3
+    bne $v0, $t2, part3
+    ori, $zero, $zero, 0
+    sw $t3, 0($a2)
+    addiu $a2, $a2, 4
+    beq $zero, $zero, loop1
+    ori $zero,$zero, 0
 part3:
-    beq $zero, $zero, loop
-    ori   $zero, $zero, 0 # nop
+    addu $t2, $t0, $t7
+    bne $t2, $t1, part4
+    ori, $zero, $zero, 0
+    sw $t0, 0($a2)
+    addiu $a2, $a2, 4
+    beq $zero, $zero, loop1
+    ori $zero,$zero, 0
+part4:
+    mul $t2, $t3, $t3
+    sltu $t2, $t2, $v0
+    beq $t2, $zero, part5
+    ori $zero,$zero, 0
+    xor $t0, $t0, $t0
+    addu $t0, $t0, $t3
+    beq $zero, $zero, loop2
+    ori $zero,$zero, 0
+part5:
+    xor $t1, $t1, $t1
+    addu $t1, $t1, $t3
+    beq $zero, $zero, loop2
+    ori $zero,$zero, 0
+
 
 end:
     jr    $ra

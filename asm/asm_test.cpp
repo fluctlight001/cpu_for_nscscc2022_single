@@ -1,28 +1,49 @@
 #include <stdio.h>
-int main (){
-    long int n;
-    // freopen("testout","w",stdout);
-    while (~scanf("%lx",&n)){
-        int flag = 0;
-        for(long int i=1;i<=65535;i=i*2){
-            if (i*i>n){
-                for(int j=i/2,j<=i;j++){
-                    if (j*j>n){
-                        printf("%ld\n",j-1);
-                        flag = 1;
-                        break;
-                    }
-                }
-            }
-            else if (i*i==n){
-                printf("%ld\n",i);
-                flag = 1;
-                break;
-            }
-            // printf("%ld",i*i);
+
+long int mid(long int v0, long int l,long int r){
+    long int m = (l+r) >> 1;
+    printf("%d %d %d\n",m,l,r);
+    if (v0 == l*l) return l;
+    else if (v0 == r*r) return r;
+    else if (v0==m*m) return m;
+    else if (r-l==1) return l;
+    else if (v0 > m*m)   return mid(v0,m,r);
+    else if (v0 < m*m) return mid (v0,l,m);
+    
+}
+long int test(long int v0, long int l, long int r){
+    long int m;
+    while(1){
+        m = (l+r)>>1;
+        printf("%d %d %d\n",m,l,r);
+        if (v0 == l*l) {
+            return l;
         }
-        if (flag==0) {
-            printf("65535\n");
+        else if (v0 == r*r) return r;
+        else if (v0==m*m) return m;
+        else if (r-l==1) return l;
+        else if (v0 > m*m) 
+        {
+            // return mid(v0,m,r);
+            l = m;
+            continue;
+        }  
+        else if (v0 < m*m){
+            // return mid (v0,l,m);
+            r = m;
+        } 
+    }
+    
+}
+int main (){
+    long int v0;
+    // freopen("testout","w",stdout);
+    while (~scanf("%lx",&v0)){
+        if (v0>0xFFFE0001){
+            printf("%lx\n",0xffff);
+        }
+        else {
+            printf("%lx\n",test(v0,0,65535));
         }
     }
     
