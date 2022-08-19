@@ -16,11 +16,7 @@ long int test(long int v0, long int l, long int r){
     while(1){
         m = (l+r)>>1;
         printf("%d %d %d\n",m,l,r);
-        if (v0 == l*l) {
-            return l;
-        }
-        else if (v0 == r*r) return r;
-        else if (v0==m*m) return m;
+        if (v0==m*m) return m;
         else if (r-l==1) return l;
         else if (v0 > m*m) 
         {
