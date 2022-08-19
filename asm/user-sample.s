@@ -33,20 +33,18 @@ loop2:
     mul   $t1, $t0, $t0
 
     beq   $t1, $v0, part1
-    ori   $zero, $zero, 0 # nop
+    sw  $t0,0($a2)
 
     sltu  $t2, $v0, $t1
     beq   $t2, $t7, part2
-    ori   $zero, $zero, 0 # nop
+    sub $t0, $t0, 0x1
     beq   $zero,$zero,loop2
     addiu $t0, $t0, 0x1
 part1:    
-    sw  $t0,0($a2)
     addiu $a2, $a2, 4
     beq $zero, $zero ,endloop2
     ori $t5, $zero, 0x1   # flag
 part2:
-    sub $t0, $t0, 0x1
     sw  $t0,0($a2)
     addiu $a2, $a2, 4
     beq $zero, $zero ,endloop2
