@@ -29,7 +29,7 @@ loop1 :
     mul $t1, $t0, $t0
     bne $t1, $v0, part1
     ori   $zero, $zero, 0 # nop
-    sw $t0, 0($a0)
+    sw $t0, 0($a2)
     addiu $a0, $a0, 4
     ori $t5, $zero, 0x1   # flag
 part1:
@@ -37,13 +37,13 @@ part1:
     bne $zero, $t2, part2
     ori   $zero, $zero, 0 # nop
     subu $t0, $t0, $t7
-    sw $t0, 0($a0)
+    sw $t0, 0($a2)
     addiu $a0, $a0, 4
     ori $t5, $zero, 0x1   # flag
 part2:
     beq $t5, $t7, end
     ori $t5, $zero, 0x0   # flag
-    sw $t6, 0($a0)
+    sw $t6, 0($a2)
 end:
     jr    $ra
     ori   $zero, $zero, 0 # nop
