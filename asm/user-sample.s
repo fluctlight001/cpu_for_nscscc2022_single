@@ -47,7 +47,7 @@ part1:
     ori $t5, $zero, 0x1   # flag
 part2:
     bne $t0, $t6, loop1
-    addiu $t0, #t0, 1
+    addiu $t0, $t0, 1
 
 loop1_end:
     beq $t5, $t7, loop
