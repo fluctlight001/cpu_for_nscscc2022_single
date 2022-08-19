@@ -12,7 +12,9 @@ __start:
     ori $t6, $zero, 0xffff # 65535
     ori $t7, $zero, 0x1   # 0x1
     ori $v0, $zero, 0x0
-    ori $v1, $zero, 0xffff     # v1 = 8
+    
+    lui $v1, 0x4d29
+    ori $v1, $v1, 0xf4fd     # v1 = 8
     lui $a0, 0x8040       # a0 = 0x80400000
     lui $a1, 0x8050
     lui $a2, 0x8050
@@ -30,7 +32,7 @@ loop2:
 
     mul   $t1, $t0, $t0
 
-    beq   $t0, $v0, part1
+    beq   $t1, $v0, part1
     ori   $zero, $zero, 0 # nop
 
     sltu  $t2, $v0, $t1
