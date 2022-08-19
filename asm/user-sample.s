@@ -26,20 +26,25 @@ __start:
 loop1:
     ori $t0, $zero, 0
     ori $t1, $zero, 0xffff
+
     lw $v0, 0($a0)
-    addiu $a0, $a0, 4
+    
+
     beq $a0, $a1, end
     ori   $zero, $zero, 0 # nop
+    addiu $a0, $a0, 4
     sltu $t2, $s0, $v0
     beq $t2, $zero, loop2
     ori   $zero, $zero, 0 # nop
     sw $t6, 0($a2)
     addiu $a2, $a2, 4
+
     beq $zero, $zero, loop1
     ori   $zero, $zero, 0 # nop
 loop2:
     addu $t3, $t0, $t1
     srl $t3, $t3, 1
+
     mul $t2, $t0, $t0
     bne $v0, $t2, part1
     ori   $zero, $zero, 0 # nop
@@ -47,6 +52,7 @@ loop2:
     addiu $a2, $a2, 4
     beq $zero, $zero, loop1
     ori $zero,$zero, 0
+
 part1:
     mul $t2, $t1, $t1
     bne $v0, $t2, part2
