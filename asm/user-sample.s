@@ -42,11 +42,13 @@ loop2:
     addiu $t0, $t0, 0x1
 part1:    
     sw  $t0,0($a2)
+    addiu $a2, $a2, 4
     beq $zero, $zero ,endloop2
     ori $t5, $zero, 0x1   # flag
 part2:
     sub $t0, $t0, 0x1
     sw  $t0,0($a2)
+    addiu $a2, $a2, 4
     beq $zero, $zero ,endloop2
     ori $t5, $zero, 0x1   # flag
     
@@ -54,6 +56,7 @@ endloop2:
     beq $t5, $t7, part3
     ori   $zero, $zero, 0 # nop
     sw $t6, 0($a2)
+    addiu $a2, $a2, 4
     
 part3:
     addiu $t4, $t4 ,1
