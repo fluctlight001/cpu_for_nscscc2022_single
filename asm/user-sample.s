@@ -29,17 +29,17 @@ loop1:
     ori $t1, $zero, 0xffff
 
     lw $v0, 0($a0)
-    addiu $a0, $a0, 4
+    
 
     sltu $t2, $s0, $v0
     beq $t2, $zero, loop2
-    addu $t3, $t0, $t1
+    addiu $a0, $a0, 4
+
     sw $t6, 0($a2)
-    
     beq $zero, $zero, loop1
     addiu $a2, $a2, 4
 loop2:
-    
+    addu $t3, $t0, $t1
     srl $t3, $t3, 1
 
     mul $t8, $t3, $t3
