@@ -45,30 +45,26 @@ loop2:
 
     mul $t8, $t3, $t3
     bne $v0, $t8, part3
-    ori   $zero, $zero, 0 # nop
+    addu $t2, $t0, $t7
     sw $t3, 0($a2)
     
     beq $zero, $zero, loop1
     addiu $a2, $a2, 4
 part3:
-    addu $t2, $t0, $t7
     bne $t2, $t1, part4
-    ori   $zero, $zero, 0 # nop
+    sltu $t2, $t8, $v0
     sw $t0, 0($a2)
     beq $zero, $zero, loop1
     addiu $a2, $a2, 4
 part4:
-    sltu $t2, $t8, $v0
     beq $t2, $zero, part5
     ori $zero,$zero, 0
-    
     
     beq $zero, $zero, loop2
     addu $t0, $t3, $zero
 part5:    
     beq $zero, $zero, loop2
     addu $t1, $t3, $zero
-
 
 end:
     jr    $ra
