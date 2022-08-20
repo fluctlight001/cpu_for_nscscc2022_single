@@ -33,14 +33,13 @@ loop1:
 
     sltu $t2, $s0, $v0
     beq $t2, $zero, loop2
-    ori   $zero, $zero, 0 # nop
-    sw $t6, 0($a2)
-    addiu $a2, $a2, 4
-
-    beq $zero, $zero, loop1
-    ori   $zero, $zero, 0 # nop
-loop2:
     addu $t3, $t0, $t1
+    sw $t6, 0($a2)
+    
+    beq $zero, $zero, loop1
+    addiu $a2, $a2, 4
+loop2:
+    
     srl $t3, $t3, 1
 
     mul $t8, $t3, $t3
