@@ -65,9 +65,7 @@ part4:
     
     beq $zero, $zero, loop2
     addu $t0, $t3, $zero
-part5:
-    xor $t1, $t1, $t1
-    
+part5:    
     beq $zero, $zero, loop2
     addu $t1, $t3, $zero
 
