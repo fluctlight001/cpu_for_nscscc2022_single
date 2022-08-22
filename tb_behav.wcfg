@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="2084305fs"></ZoomStartTime>
-      <ZoomEndTime time="2196598fs"></ZoomEndTime>
-      <Cursor1Time time="2137395fs"></Cursor1Time>
+      <ZoomStartTime time="3507261096fs"></ZoomStartTime>
+      <ZoomEndTime time="3507384517fs"></ZoomEndTime>
+      <Cursor1Time time="3507281666fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="206"></NameColumnWidth>
-      <ValueColumnWidth column_width="177"></ValueColumnWidth>
+      <ValueColumnWidth column_width="161"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="28" />
+   <WVObjectSize size="30" />
    <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/pc_reg" type="array">
       <obj_property name="ElementShortName">pc_reg[31:0]</obj_property>
       <obj_property name="ObjectShortName">pc_reg[31:0]</obj_property>
@@ -123,6 +123,7 @@
    <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_ID/u_regfile/reg_array" type="array">
       <obj_property name="ElementShortName">reg_array[31:0][31:0]</obj_property>
       <obj_property name="ObjectShortName">reg_array[31:0][31:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/br_e" type="logic">
       <obj_property name="ElementShortName">br_e</obj_property>
@@ -131,5 +132,13 @@
    <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_EX/u_bru/pc" type="array">
       <obj_property name="ElementShortName">pc[31:0]</obj_property>
       <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_IF/pc_reg" type="array">
+      <obj_property name="ElementShortName">pc_reg[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_reg[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb/dut/u_mycpu_top/u_mycpu_core/u_MEM/mem_result" type="array">
+      <obj_property name="ElementShortName">mem_result[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_result[31:0]</obj_property>
    </wvobject>
 </wave_config>
